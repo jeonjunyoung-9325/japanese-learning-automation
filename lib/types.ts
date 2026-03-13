@@ -16,6 +16,17 @@ export type QuestItem = {
   status: "ACTIVE" | "COMPLETED";
 };
 
+export type NotionPageIds = {
+  dailyRoutinePageId?: string;
+  vocabularyPageIds: string[];
+  questPageIds: string[];
+};
+
+export type NotionSyncHistoryItem = {
+  syncedAt: string;
+  notionPageIds: NotionPageIds;
+};
+
 export type DailyRoutine = {
   id: string;
   date: string;
@@ -26,11 +37,8 @@ export type DailyRoutine = {
   vocabulary: VocabularyItem[];
   quests: QuestItem[];
   createdAt: string;
-  notionPageIds?: {
-    dailyRoutinePageId?: string;
-    vocabularyPageIds: string[];
-    questPageIds: string[];
-  };
+  notionPageIds?: NotionPageIds;
+  notionSyncHistory?: NotionSyncHistoryItem[];
 };
 
 export type StoreShape = {

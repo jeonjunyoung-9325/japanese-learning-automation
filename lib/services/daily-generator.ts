@@ -4,7 +4,7 @@ import { getConfig } from "@/lib/env";
 import { syncRoutineToNotion } from "@/lib/notion";
 import { generateLessonWithOpenAI } from "@/lib/openai";
 import { readStore, writeStore } from "@/lib/store";
-import { DailyRoutine, LessonGenerationPayload } from "@/lib/types";
+import { DailyRoutine, LessonGenerationPayload, NotionPageIds } from "@/lib/types";
 
 type GenerationResult = {
   duplicate: boolean;
@@ -22,7 +22,7 @@ export async function runDailyGeneration(): Promise<GenerationResult> {
   if (existingRoutine) {
     if (!config.skipNotionSync && needsNotionSync(existingRoutine)) {
       const notionPageIds = await syncRoutineToNotion(existingRoutine);
-      existingRoutine.notionPageIds = notionPageIds;
+      applyNotionSyncResult(existingRoutine, notionPageIds);
       store.routinesByDate[today] = existingRoutine;
     }
 
@@ -56,7 +56,7 @@ export async function runDailyGeneration(): Promise<GenerationResult> {
 
   const routine = buildRoutine(today, payload);
   const notionPageIds = await syncRoutineToNotion(routine);
-  routine.notionPageIds = notionPageIds;
+  applyNotionSyncResult(routine, notionPageIds);
 
   store.routinesByDate[today] = routine;
   store.generationLog.push({
@@ -91,7 +91,7 @@ export async function rerunTodayNotionSync(): Promise<GenerationResult> {
   }
 
   const notionPageIds = await syncRoutineToNotion(existingRoutine);
-  existingRoutine.notionPageIds = notionPageIds;
+  applyNotionSyncResult(existingRoutine, notionPageIds);
   store.routinesByDate[today] = existingRoutine;
   store.generationLog.push({
     date: today,
@@ -149,6 +149,17 @@ function normalizeText(value: string) {
 
 function needsNotionSync(routine: DailyRoutine) {
   return !routine.notionPageIds?.dailyRoutinePageId;
+}
+
+function applyNotionSyncResult(routine: DailyRoutine, notionPageIds: NotionPageIds) {
+  routine.notionPageIds = notionPageIds;
+  routine.notionSyncHistory = [
+    ...(routine.notionSyncHistory ?? []),
+    {
+      syncedAt: new Date().toISOString(),
+      notionPageIds,
+    },
+  ];
 }
 
 function calculateEarnedXp(quests: LessonGenerationPayload["quests"]) {
