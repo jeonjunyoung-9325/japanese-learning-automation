@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { DailyRoutine } from "@/lib/types";
 
 type ResyncResponse = {
   ok: boolean;
@@ -17,8 +18,20 @@ export function NotionResyncButton() {
     setMessage(null);
 
     try {
+      const today = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Seoul",
+      }).format(new Date());
+      const stored = window.localStorage.getItem(`dailyRoutine:${today}`);
+      const routine = stored ? (JSON.parse(stored) as DailyRoutine) : undefined;
+
       const response = await fetch("/api/notion-resync", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          routine,
+        }),
       });
       const data = (await response.json()) as ResyncResponse;
       setMessage(data.message);

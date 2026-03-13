@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { DailyRoutine } from "@/lib/types";
 
 type GenerateResponse = {
   ok: boolean;
   duplicate: boolean;
   message: string;
+  routine?: DailyRoutine;
 };
 
 export function GenerateButton() {
@@ -23,6 +25,9 @@ export function GenerateButton() {
       const data = (await response.json()) as GenerateResponse;
       setMessage(data.message);
       if (data.ok) {
+        if (data.routine) {
+          window.localStorage.setItem(`dailyRoutine:${data.routine.date}`, JSON.stringify(data.routine));
+        }
         window.location.reload();
       }
     } catch (error) {

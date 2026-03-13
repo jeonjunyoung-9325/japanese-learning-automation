@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { rerunTodayNotionSync } from "@/lib/services/daily-generator";
+import { DailyRoutine } from "@/lib/types";
 
 export const runtime = "nodejs";
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
-    const result = await rerunTodayNotionSync();
+    const body = (await request.json().catch(() => null)) as { routine?: DailyRoutine } | null;
+    const result = await rerunTodayNotionSync(body?.routine);
 
     return NextResponse.json({
       ok: true,

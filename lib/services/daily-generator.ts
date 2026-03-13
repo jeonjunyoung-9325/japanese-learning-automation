@@ -75,7 +75,7 @@ export async function runDailyGeneration(): Promise<GenerationResult> {
   };
 }
 
-export async function rerunTodayNotionSync(): Promise<GenerationResult> {
+export async function rerunTodayNotionSync(inputRoutine?: DailyRoutine): Promise<GenerationResult> {
   const config = getConfig();
   const today = getCurrentDateInTimezone(config.timezone);
 
@@ -84,7 +84,7 @@ export async function rerunTodayNotionSync(): Promise<GenerationResult> {
   }
 
   const store = await readStore();
-  const existingRoutine = store.routinesByDate[today];
+  const existingRoutine = store.routinesByDate[today] ?? getProvidedTodayRoutine(inputRoutine, today);
 
   if (!existingRoutine) {
     throw new Error("오늘 생성된 루틴이 없습니다. 먼저 오늘 학습을 생성해주세요.");
@@ -107,6 +107,14 @@ export async function rerunTodayNotionSync(): Promise<GenerationResult> {
     message: `${today} 루틴을 Notion에 다시 적재했습니다.`,
     routine: existingRoutine,
   };
+}
+
+function getProvidedTodayRoutine(routine: DailyRoutine | undefined, today: string) {
+  if (!routine || routine.date !== today) {
+    return null;
+  }
+
+  return routine;
 }
 
 function buildRoutine(date: string, payload: LessonGenerationPayload): DailyRoutine {
