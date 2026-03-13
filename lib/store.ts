@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { StoreShape } from "@/lib/types";
 
-const DATA_DIR = path.join(process.cwd(), "data");
+const DATA_DIR = process.env.VERCEL ? path.join("/tmp", "japanese-learning-automation") : path.join(process.cwd(), "data");
 const STORE_PATH = path.join(DATA_DIR, "state.json");
 
 const initialState: StoreShape = {
