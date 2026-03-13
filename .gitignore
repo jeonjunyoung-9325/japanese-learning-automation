@@ -10,3 +10,5 @@ pnpm-debug.log*
 .env.local
 tsconfig.tsbuildinfo
 codex_bug_report.docx
+.vercel
+.env*.local
