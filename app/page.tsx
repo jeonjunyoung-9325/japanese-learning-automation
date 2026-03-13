@@ -1,4 +1,5 @@
 import { GenerateButton } from "@/components/generate-button";
+import { NotionResyncButton } from "@/components/notion-resync-button";
 import { SyncProgressButton } from "@/components/sync-progress-button";
 import { getCurrentDateInTimezone } from "@/lib/date";
 import { getConfig } from "@/lib/env";
@@ -47,10 +48,11 @@ export default async function HomePage() {
               marginTop: 20,
               display: "grid",
               gap: 12,
-              gridTemplateColumns: "repeat(auto-fit, minmax(220px, max-content))",
+              gridTemplateColumns: "repeat(auto-fit, minmax(240px, max-content))",
             }}
           >
             <GenerateButton />
+            <NotionResyncButton />
             <SyncProgressButton />
           </div>
         </div>

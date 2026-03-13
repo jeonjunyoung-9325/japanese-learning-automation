@@ -75,6 +75,40 @@ export async function runDailyGeneration(): Promise<GenerationResult> {
   };
 }
 
+export async function rerunTodayNotionSync(): Promise<GenerationResult> {
+  const config = getConfig();
+  const today = getCurrentDateInTimezone(config.timezone);
+
+  if (config.skipNotionSync) {
+    throw new Error("NOTION_SKIP_SYNC=true 상태라 Notion 재적재를 실행할 수 없습니다.");
+  }
+
+  const store = await readStore();
+  const existingRoutine = store.routinesByDate[today];
+
+  if (!existingRoutine) {
+    throw new Error("오늘 생성된 루틴이 없습니다. 먼저 오늘 학습을 생성해주세요.");
+  }
+
+  const notionPageIds = await syncRoutineToNotion(existingRoutine);
+  existingRoutine.notionPageIds = notionPageIds;
+  store.routinesByDate[today] = existingRoutine;
+  store.generationLog.push({
+    date: today,
+    idempotencyKey: `notion-resync:${today}`,
+    generatedAt: new Date().toISOString(),
+    duplicate: true,
+    routineId: existingRoutine.id,
+  });
+  await writeStore(store);
+
+  return {
+    duplicate: true,
+    message: `${today} 루틴을 Notion에 다시 적재했습니다.`,
+    routine: existingRoutine,
+  };
+}
+
 function buildRoutine(date: string, payload: LessonGenerationPayload): DailyRoutine {
   const totalXp = payload.quests.reduce((sum, item) => sum + item.xpReward, 0);
   const earnedXp = calculateEarnedXp(payload.quests);
