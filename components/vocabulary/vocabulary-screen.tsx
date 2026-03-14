@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useApp } from "@/components/auth/app-provider";
 import { getDifficultyLabel } from "@/lib/utils/labels";
 import type { Difficulty, StudySentence, VocabularyWord } from "@/lib/types";
@@ -35,8 +35,6 @@ export function VocabularyScreen() {
   const [difficulty, setDifficulty] = useState<"all" | Difficulty>("all");
   const [collectionFilter, setCollectionFilter] = useState<CollectionFilter>("all");
   const [query, setQuery] = useState("");
-  const [sentenceCardIndex, setSentenceCardIndex] = useState(0);
-  const [showSentenceMeaning, setShowSentenceMeaning] = useState(false);
 
   const normalizedQuery = query.trim().toLowerCase();
   const actionableTodayWordCount = studyPreferences.todayWordIds.filter(
@@ -93,21 +91,6 @@ export function VocabularyScreen() {
     [collectionFilter, difficulty, normalizedQuery, studyPreferences.favoriteSentenceIds, studyPreferences.masteredSentenceIds, studyPreferences.todaySentenceIds, studySentences],
   );
 
-  const sentenceCardItems = useMemo(() => {
-    const todayItems = studySentences.filter((item) => studyPreferences.todaySentenceIds.includes(item.id));
-    return todayItems.length > 0 ? todayItems : visibleSentences.slice(0, 8);
-  }, [studyPreferences.todaySentenceIds, studySentences, visibleSentences]);
-
-  useEffect(() => {
-    if (sentenceCardItems.length === 0) {
-      setSentenceCardIndex(0);
-      return;
-    }
-
-    setSentenceCardIndex((current) => (current >= sentenceCardItems.length ? 0 : current));
-  }, [sentenceCardItems.length]);
-
-  const activeSentenceCard = sentenceCardItems[sentenceCardIndex] ?? null;
   const visibleCount = tab === "words" ? visibleWords.length : visibleSentences.length;
 
   return (
@@ -190,82 +173,6 @@ export function VocabularyScreen() {
           </div>
         </div>
       </section>
-
-      {tab === "sentences" && activeSentenceCard && (
-        <section className="rounded-[30px] border border-orange-300/20 bg-[linear-gradient(135deg,rgba(255,141,93,0.2),rgba(255,209,102,0.06))] p-5">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-xs uppercase tracking-[0.18em] text-orange-200">예문 음독 미니 카드</p>
-              <h2 className="mt-2 text-xl font-semibold text-white">
-                {sentenceCardItems.length > 0 ? `${sentenceCardIndex + 1} / ${sentenceCardItems.length}` : "0 / 0"}
-              </h2>
-            </div>
-            <button
-              onClick={() => setShowSentenceMeaning((current) => !current)}
-              className="rounded-2xl border border-white/10 bg-black/20 px-4 py-2 text-sm text-stone-100"
-            >
-              {showSentenceMeaning ? "뜻 숨기기" : "뜻 보기"}
-            </button>
-          </div>
-
-          <div className="mt-4 rounded-[28px] border border-white/10 bg-stone-950/40 p-5">
-            <p className="text-2xl font-semibold leading-9 text-white">{activeSentenceCard.japanese}</p>
-            <p className="mt-3 text-sm text-stone-300">{activeSentenceCard.reading}</p>
-            {showSentenceMeaning && (
-              <>
-                <p className="mt-4 text-base text-stone-100">{activeSentenceCard.meaningKo}</p>
-                <p className="mt-2 text-sm text-stone-300">패턴: {activeSentenceCard.patternKo}</p>
-              </>
-            )}
-            <div className="mt-4 flex flex-wrap gap-2 text-xs text-stone-400">
-              <span className="rounded-full bg-black/20 px-3 py-1">{activeSentenceCard.category}</span>
-              <span className="rounded-full bg-black/20 px-3 py-1">{getDifficultyLabel(activeSentenceCard.difficulty)}</span>
-              {studyPreferences.favoriteSentenceIds.includes(activeSentenceCard.id) && (
-                <span className="rounded-full bg-amber-400/15 px-3 py-1 text-amber-200">즐겨찾기</span>
-              )}
-              {studyPreferences.todaySentenceIds.includes(activeSentenceCard.id) && (
-                <span className="rounded-full bg-sky-400/15 px-3 py-1 text-sky-200">오늘 외울 것</span>
-              )}
-              {studyPreferences.masteredSentenceIds.includes(activeSentenceCard.id) && (
-                <span className="rounded-full bg-emerald-400/15 px-3 py-1 text-emerald-200">암기 완료</span>
-              )}
-            </div>
-
-            <div className="mt-4 flex flex-wrap gap-2">
-              <ActionButton
-                active={studyPreferences.todaySentenceIds.includes(activeSentenceCard.id)}
-                label={studyPreferences.todaySentenceIds.includes(activeSentenceCard.id) ? "오늘 목록 해제" : "오늘 외울 것"}
-                onClick={() => toggleSentenceToday(activeSentenceCard.id)}
-              />
-              <ActionButton
-                active={studyPreferences.favoriteSentenceIds.includes(activeSentenceCard.id)}
-                label={studyPreferences.favoriteSentenceIds.includes(activeSentenceCard.id) ? "즐겨찾기 해제" : "즐겨찾기"}
-                onClick={() => toggleSentenceFavorite(activeSentenceCard.id)}
-              />
-              <ActionButton
-                active={studyPreferences.masteredSentenceIds.includes(activeSentenceCard.id)}
-                label={studyPreferences.masteredSentenceIds.includes(activeSentenceCard.id) ? "암기 완료 해제" : "암기 완료"}
-                onClick={() => toggleSentenceMastered(activeSentenceCard.id)}
-              />
-            </div>
-          </div>
-
-          <div className="mt-4 flex gap-3">
-            <button
-              onClick={() => setSentenceCardIndex((current) => (current === 0 ? sentenceCardItems.length - 1 : current - 1))}
-              className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-stone-100"
-            >
-              이전 카드
-            </button>
-            <button
-              onClick={() => setSentenceCardIndex((current) => (current + 1) % sentenceCardItems.length)}
-              className="rounded-2xl bg-orange-400 px-4 py-3 text-sm font-semibold text-stone-950"
-            >
-              다음 카드
-            </button>
-          </div>
-        </section>
-      )}
 
       {tab === "words" ? (
         visibleWords.length > 0 ? (
