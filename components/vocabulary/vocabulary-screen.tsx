@@ -59,8 +59,9 @@ export function VocabularyScreen() {
           (collectionFilter === "today" && isToday) ||
           (collectionFilter === "favorite" && isFavorite) ||
           (collectionFilter === "mastered" && isMastered);
+        const visibleByMasteredState = collectionFilter === "mastered" ? isMastered : !isMastered;
 
-        return matchesDifficulty && matchesQuery && matchesCollection;
+        return matchesDifficulty && matchesQuery && matchesCollection && visibleByMasteredState;
       }),
     [collectionFilter, difficulty, normalizedQuery, studyPreferences.favoriteWordIds, studyPreferences.masteredWordIds, studyPreferences.todayWordIds, vocabularyWords],
   );
@@ -79,8 +80,9 @@ export function VocabularyScreen() {
           (collectionFilter === "today" && isToday) ||
           (collectionFilter === "favorite" && isFavorite) ||
           (collectionFilter === "mastered" && isMastered);
+        const visibleByMasteredState = collectionFilter === "mastered" ? isMastered : !isMastered;
 
-        return matchesDifficulty && matchesQuery && matchesCollection;
+        return matchesDifficulty && matchesQuery && matchesCollection && visibleByMasteredState;
       }),
     [collectionFilter, difficulty, normalizedQuery, studyPreferences.favoriteSentenceIds, studyPreferences.masteredSentenceIds, studyPreferences.todaySentenceIds, studySentences],
   );
@@ -115,9 +117,30 @@ export function VocabularyScreen() {
       <section className="rounded-[28px] border border-white/10 bg-white/5 p-5">
         <div className="grid gap-4">
           <div className="grid grid-cols-3 gap-3">
-            <StatCard label="오늘 외울 단어" value={`${studyPreferences.todayWordIds.length}개`} />
-            <StatCard label="오늘 외울 문장" value={`${studyPreferences.todaySentenceIds.length}개`} />
-            <StatCard label="암기 완료" value={`${studyPreferences.masteredWordIds.length + studyPreferences.masteredSentenceIds.length}개`} />
+            <StatCard
+              label="오늘 외울 단어"
+              value={`${studyPreferences.todayWordIds.length}개`}
+              active={tab === "words" && collectionFilter === "today"}
+              onClick={() => {
+                setTab("words");
+                setCollectionFilter("today");
+              }}
+            />
+            <StatCard
+              label="오늘 외울 문장"
+              value={`${studyPreferences.todaySentenceIds.length}개`}
+              active={tab === "sentences" && collectionFilter === "today"}
+              onClick={() => {
+                setTab("sentences");
+                setCollectionFilter("today");
+              }}
+            />
+            <StatCard
+              label="암기 완료"
+              value={`${studyPreferences.masteredWordIds.length + studyPreferences.masteredSentenceIds.length}개`}
+              active={collectionFilter === "mastered"}
+              onClick={() => setCollectionFilter("mastered")}
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-2 rounded-[24px] bg-black/20 p-1">
@@ -371,12 +394,25 @@ function ActionButton({
   );
 }
 
-function StatCard({ label, value }: { label: string; value: string }) {
+function StatCard({
+  label,
+  value,
+  active = false,
+  onClick,
+}: {
+  label: string;
+  value: string;
+  active?: boolean;
+  onClick?: () => void;
+}) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+    <button
+      onClick={onClick}
+      className={`rounded-2xl border p-4 text-left transition ${active ? "border-orange-300/50 bg-orange-400/15" : "border-white/10 bg-black/20"}`}
+    >
       <p className="text-xs uppercase tracking-[0.16em] text-stone-500">{label}</p>
       <p className="mt-2 text-lg font-semibold text-white">{value}</p>
-    </div>
+    </button>
   );
 }
 
