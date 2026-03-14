@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useApp } from "@/components/auth/app-provider";
 import { useVoiceInput } from "@/hooks/use-voice-input";
 import { getCategoryLabel, getLessonTitleLabel } from "@/lib/utils/labels";
@@ -19,7 +19,6 @@ export function LessonPracticeScreen({
   const [answer, setAnswer] = useState("");
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState<Awaited<ReturnType<typeof submitAttempt>> | null>(null);
-  const [showHints, setShowHints] = useState(false);
   const [submitError, setSubmitError] = useState("");
 
   const prompt = lesson?.prompts[promptIndex];
@@ -27,12 +26,6 @@ export function LessonPracticeScreen({
   const { listening, start, stop, reset, supported } = useVoiceInput((transcript) => {
     setAnswer(transcript);
   });
-
-  const keyExpressions = useMemo(
-    () =>
-      lesson?.expressions.filter((expression) => prompt?.keyExpressionIds.includes(expression.id)) ?? [],
-    [lesson, prompt],
-  );
 
   if (!lesson || !prompt) {
     return (
@@ -59,7 +52,6 @@ export function LessonPracticeScreen({
   useEffect(() => {
     reset();
     setAnswer("");
-    setShowHints(false);
     setSubmitError("");
   }, [promptIndex, reset]);
 
@@ -122,26 +114,10 @@ export function LessonPracticeScreen({
         <h2 className="mt-2 text-xl font-semibold text-white">{prompt.situation}</h2>
         <p className="mt-2 text-sm leading-6 text-stone-300">{prompt.instructionKo}</p>
 
-        <div className="mt-4">
-          <button
-            onClick={() => setShowHints((current) => !current)}
-            className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-stone-100"
-          >
-            {showHints ? "힌트 숨기기" : "힌트 보기"}
-          </button>
+        <div className="mt-4 rounded-[24px] border border-orange-300/20 bg-orange-400/10 p-4">
+          <p className="text-xs uppercase tracking-[0.18em] text-orange-200">따라 말할 문장</p>
+          <p className="mt-2 text-lg font-semibold leading-8 text-white">{prompt.targetAnswer}</p>
         </div>
-
-        {showHints && (
-          <div className="mt-4 grid gap-2">
-            {keyExpressions.map((expression) => (
-              <div key={expression.id} className="rounded-2xl border border-white/10 bg-white/5 p-3">
-                <div className="font-medium text-white">{expression.japanese}</div>
-                <div className="text-sm text-stone-400">{expression.reading}</div>
-                <div className="mt-1 text-sm text-stone-300">{expression.meaningKo}</div>
-              </div>
-            ))}
-          </div>
-        )}
 
         <textarea
           value={answer}
