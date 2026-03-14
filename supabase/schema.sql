@@ -85,11 +85,23 @@ create table if not exists public.streaks (
   last_practice_date date
 );
 
+create table if not exists public.study_preferences (
+  user_id uuid primary key references auth.users (id) on delete cascade,
+  favorite_word_ids text[] not null default '{}',
+  mastered_word_ids text[] not null default '{}',
+  today_word_ids text[] not null default '{}',
+  favorite_sentence_ids text[] not null default '{}',
+  mastered_sentence_ids text[] not null default '{}',
+  today_sentence_ids text[] not null default '{}',
+  updated_at timestamptz not null default now()
+);
+
 alter table public.profiles enable row level security;
 alter table public.practice_attempts enable row level security;
 alter table public.review_items enable row level security;
 alter table public.daily_progress enable row level security;
 alter table public.streaks enable row level security;
+alter table public.study_preferences enable row level security;
 alter table public.lessons enable row level security;
 alter table public.lesson_expressions enable row level security;
 alter table public.lesson_dialogues enable row level security;
@@ -99,6 +111,7 @@ drop policy if exists "practice-own-row" on public.practice_attempts;
 drop policy if exists "review-own-row" on public.review_items;
 drop policy if exists "daily-progress-own-row" on public.daily_progress;
 drop policy if exists "streaks-own-row" on public.streaks;
+drop policy if exists "study-preferences-own-row" on public.study_preferences;
 drop policy if exists "lessons-readable" on public.lessons;
 drop policy if exists "lesson-expressions-readable" on public.lesson_expressions;
 drop policy if exists "lesson-dialogues-readable" on public.lesson_dialogues;
@@ -108,6 +121,7 @@ create policy "practice-own-row" on public.practice_attempts for all using (auth
 create policy "review-own-row" on public.review_items for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 create policy "daily-progress-own-row" on public.daily_progress for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 create policy "streaks-own-row" on public.streaks for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+create policy "study-preferences-own-row" on public.study_preferences for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 create policy "lessons-readable" on public.lessons for select using (true);
 create policy "lesson-expressions-readable" on public.lesson_expressions for select using (true);

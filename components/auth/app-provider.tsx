@@ -164,6 +164,60 @@ function writeStudyPreferences(userId: string, preferences: StudyPreferences) {
   window.localStorage.setItem(getStudyPreferencesKey(userId), JSON.stringify(preferences));
 }
 
+function normalizeStudyPreferences(input?: Partial<StudyPreferences> | null): StudyPreferences {
+  return {
+    favoriteWordIds: input?.favoriteWordIds ?? [],
+    masteredWordIds: input?.masteredWordIds ?? [],
+    todayWordIds: input?.todayWordIds ?? [],
+    favoriteSentenceIds: input?.favoriteSentenceIds ?? [],
+    masteredSentenceIds: input?.masteredSentenceIds ?? [],
+    todaySentenceIds: input?.todaySentenceIds ?? [],
+  };
+}
+
+function mapStudyPreferencesRow(row: {
+  favorite_word_ids?: string[] | null;
+  mastered_word_ids?: string[] | null;
+  today_word_ids?: string[] | null;
+  favorite_sentence_ids?: string[] | null;
+  mastered_sentence_ids?: string[] | null;
+  today_sentence_ids?: string[] | null;
+} | null | undefined): StudyPreferences {
+  return normalizeStudyPreferences(
+    row
+      ? {
+          favoriteWordIds: row.favorite_word_ids ?? [],
+          masteredWordIds: row.mastered_word_ids ?? [],
+          todayWordIds: row.today_word_ids ?? [],
+          favoriteSentenceIds: row.favorite_sentence_ids ?? [],
+          masteredSentenceIds: row.mastered_sentence_ids ?? [],
+          todaySentenceIds: row.today_sentence_ids ?? [],
+        }
+      : null,
+  );
+}
+
+async function persistStudyPreferencesToSupabase(
+  userId: string,
+  preferences: StudyPreferences,
+) {
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) {
+    return;
+  }
+
+  await supabase.from("study_preferences").upsert({
+    user_id: userId,
+    favorite_word_ids: preferences.favoriteWordIds,
+    mastered_word_ids: preferences.masteredWordIds,
+    today_word_ids: preferences.todayWordIds,
+    favorite_sentence_ids: preferences.favoriteSentenceIds,
+    mastered_sentence_ids: preferences.masteredSentenceIds,
+    today_sentence_ids: preferences.todaySentenceIds,
+    updated_at: new Date().toISOString(),
+  });
+}
+
 function toggleId(list: string[], targetId: string) {
   return list.includes(targetId) ? list.filter((item) => item !== targetId) : [...list, targetId];
 }
@@ -243,13 +297,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const [{ data: profileRow }, { data: attemptsRows }, { data: reviewRows }, { data: progressRows }, { data: streakRow }] =
+    const [{ data: profileRow }, { data: attemptsRows }, { data: reviewRows }, { data: progressRows }, { data: streakRow }, { data: studyPreferencesRow }] =
       await Promise.all([
         supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
         supabase.from("practice_attempts").select("*").eq("user_id", userId).order("created_at", { ascending: false }),
         supabase.from("review_items").select("*").eq("user_id", userId).order("updated_at", { ascending: false }),
         supabase.from("daily_progress").select("*").eq("user_id", userId).order("date", { ascending: true }),
         supabase.from("streaks").select("*").eq("user_id", userId).maybeSingle(),
+        supabase.from("study_preferences").select("*").eq("user_id", userId).maybeSingle(),
       ]);
 
     const now = new Date().toISOString();
@@ -316,7 +371,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
       completedLessons: row.completed_lessons,
       averageScore: row.average_score,
     })));
-    setStudyPreferences(readStudyPreferences(userId));
+    const localStudyPreferences = readStudyPreferences(userId);
+    const remoteStudyPreferences = mapStudyPreferencesRow(studyPreferencesRow);
+    const hasRemoteStudyPreferences = Boolean(studyPreferencesRow);
+    const resolvedStudyPreferences = hasRemoteStudyPreferences ? remoteStudyPreferences : localStudyPreferences;
+
+    setStudyPreferences(resolvedStudyPreferences);
+    writeStudyPreferences(userId, resolvedStudyPreferences);
+
+    if (!hasRemoteStudyPreferences) {
+      await persistStudyPreferencesToSupabase(userId, resolvedStudyPreferences);
+    }
+
     setStreak(
       streakRow
         ? {
@@ -394,8 +460,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
 
     setStudyPreferences((current) => {
-      const next = updater(current);
+      const next = normalizeStudyPreferences(updater(current));
       writeStudyPreferences(profile.id, next);
+      if (!isGuestMode && session?.user) {
+        void persistStudyPreferencesToSupabase(session.user.id, next);
+      }
       return next;
     });
   }
