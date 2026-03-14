@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type SpeechRecognitionInstance = {
   lang: string;
@@ -29,9 +29,14 @@ declare global {
 export function useVoiceInput(onTranscript: (value: string) => void) {
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const transcriptRef = useRef("");
+  const onTranscriptRef = useRef(onTranscript);
   const shouldKeepListeningRef = useRef(false);
   const [supported, setSupported] = useState(false);
   const [listening, setListening] = useState(false);
+
+  useEffect(() => {
+    onTranscriptRef.current = onTranscript;
+  }, [onTranscript]);
 
   useEffect(() => {
     const Recognition = window.SpeechRecognition ?? window.webkitSpeechRecognition;
@@ -58,12 +63,20 @@ export function useVoiceInput(onTranscript: (value: string) => void) {
       }
 
       transcriptRef.current = combinedTranscript;
-      onTranscript(combinedTranscript);
+      onTranscriptRef.current(combinedTranscript);
     };
-    instance.onerror = () => setListening(false);
+    instance.onerror = () => {
+      shouldKeepListeningRef.current = false;
+      setListening(false);
+    };
     instance.onend = () => {
       if (shouldKeepListeningRef.current) {
-        recognitionRef.current?.start();
+        try {
+          recognitionRef.current?.start();
+        } catch {
+          shouldKeepListeningRef.current = false;
+          setListening(false);
+        }
         return;
       }
 
@@ -71,20 +84,51 @@ export function useVoiceInput(onTranscript: (value: string) => void) {
     };
     recognitionRef.current = instance;
     setSupported(true);
-  }, [onTranscript]);
 
-  function start() {
+    return () => {
+      shouldKeepListeningRef.current = false;
+      try {
+        instance.stop();
+      } catch {
+        // Ignore cleanup errors from already-stopped recognition instances.
+      }
+      instance.onresult = null;
+      instance.onerror = null;
+      instance.onend = null;
+      recognitionRef.current = null;
+    };
+  }, []);
+
+  const start = useCallback(() => {
+    if (!recognitionRef.current || listening) {
+      return;
+    }
+
     transcriptRef.current = "";
     shouldKeepListeningRef.current = true;
-    recognitionRef.current?.start();
-    setListening(true);
-  }
+    try {
+      recognitionRef.current.start();
+      setListening(true);
+    } catch {
+      shouldKeepListeningRef.current = false;
+      setListening(false);
+    }
+  }, [listening]);
 
-  function stop() {
+  const stop = useCallback(() => {
     shouldKeepListeningRef.current = false;
-    recognitionRef.current?.stop();
+    try {
+      recognitionRef.current?.stop();
+    } catch {
+      // Ignore stop errors if recognition already ended.
+    }
     setListening(false);
-  }
+  }, []);
 
-  return { supported, listening, start, stop };
+  const reset = useCallback(() => {
+    stop();
+    transcriptRef.current = "";
+  }, [stop]);
+
+  return { supported, listening, start, stop, reset };
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useApp } from "@/components/auth/app-provider";
 import { useVoiceInput } from "@/hooks/use-voice-input";
 import { getCategoryLabel, getLessonTitleLabel } from "@/lib/utils/labels";
@@ -16,7 +16,7 @@ export function LessonPracticeScreen({ lessonId }: { lessonId: string }) {
 
   const prompt = lesson?.prompts[promptIndex];
   const progress = lesson ? ((promptIndex + (feedback ? 1 : 0)) / lesson.prompts.length) * 100 : 0;
-  const { listening, start, stop, supported } = useVoiceInput((transcript) => {
+  const { listening, start, stop, reset, supported } = useVoiceInput((transcript) => {
     setAnswer(transcript);
   });
 
@@ -38,9 +38,18 @@ export function LessonPracticeScreen({ lessonId }: { lessonId: string }) {
   const currentLesson = lesson;
   const currentPrompt = prompt;
 
+  useEffect(() => {
+    reset();
+    setAnswer("");
+  }, [promptIndex, reset]);
+
   async function handleSubmit(inputMode: "text" | "voice") {
     if (!answer.trim()) {
       return;
+    }
+
+    if (listening) {
+      stop();
     }
 
     setBusy(true);
@@ -55,6 +64,7 @@ export function LessonPracticeScreen({ lessonId }: { lessonId: string }) {
   }
 
   function handleNext() {
+    reset();
     setFeedback(null);
     setAnswer("");
     setPromptIndex((index) => Math.min(index + 1, currentLesson.prompts.length - 1));
