@@ -138,11 +138,17 @@ export function LessonPracticeScreen({ lessonId }: { lessonId: string }) {
           </div>
           <div className="mt-5 flex gap-3">
             {!isLastPrompt ? (
-              <button onClick={handleNext} className="flex-1 rounded-2xl bg-white px-4 py-3 font-semibold text-stone-950">
+              <button
+                onClick={handleNext}
+                className="flex-1 rounded-2xl bg-orange-400 px-4 py-3 font-semibold text-stone-950 shadow-lg shadow-orange-950/20"
+              >
                 다음 프롬프트
               </button>
             ) : (
-              <Link href="/dashboard" className="flex-1 rounded-2xl bg-white px-4 py-3 text-center font-semibold text-stone-950">
+              <Link
+                href="/dashboard"
+                className="flex-1 rounded-2xl bg-orange-400 px-4 py-3 text-center font-semibold text-stone-950 shadow-lg shadow-orange-950/20"
+              >
                 레슨 마치기
               </Link>
             )}

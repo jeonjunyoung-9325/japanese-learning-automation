@@ -24,10 +24,16 @@ export function DashboardScreen() {
         <h1 className="mt-3 text-3xl font-semibold text-white">{getLessonTitleLabel(recommendedLesson)}</h1>
         <p className="mt-2 text-sm leading-6 text-orange-50/80">{recommendedLesson.explanationKo}</p>
         <div className="mt-5 flex flex-wrap gap-3">
-          <Link href={`/lessons/${recommendedLesson.id}`} className="rounded-2xl bg-white px-4 py-3 font-semibold text-stone-950">
+          <Link
+            href={`/lessons/${recommendedLesson.id}`}
+            className="rounded-2xl bg-orange-400 px-5 py-3 font-semibold text-stone-950 shadow-lg shadow-orange-950/20"
+          >
             레슨 시작
           </Link>
-          <Link href="/review" className="rounded-2xl border border-white/20 px-4 py-3 text-sm text-white">
+          <Link
+            href="/review"
+            className="rounded-2xl border border-orange-300/30 bg-stone-950/30 px-5 py-3 text-sm font-medium text-orange-100"
+          >
             빠른 복습
           </Link>
         </div>
