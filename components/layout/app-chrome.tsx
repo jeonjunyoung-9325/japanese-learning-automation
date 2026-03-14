@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { useApp } from "@/components/auth/app-provider";
+import { Logo } from "@/components/brand/logo";
 
 export function AppChrome({ children }: { children: ReactNode }) {
   const { loading, profile } = useApp();
@@ -28,6 +29,9 @@ export function AppChrome({ children }: { children: ReactNode }) {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col px-4 pb-28 pt-5">
+      <header className="mb-5">
+        <Logo compact />
+      </header>
       {children}
       <BottomNav />
     </main>

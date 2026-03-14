@@ -3,8 +3,12 @@ import "@/app/globals.css";
 import { AppProvider } from "@/components/auth/app-provider";
 
 export const metadata: Metadata = {
-  title: "코토바 스피크",
+  title: "Kotoba Mate",
   description: "한국인 학습자를 위한 모바일 중심 일본어 회화 연습 앱",
+  icons: {
+    icon: "/icon.svg",
+    apple: "/apple-icon.svg",
+  },
 };
 
 export default function RootLayout({

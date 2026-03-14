@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useApp } from "@/components/auth/app-provider";
+import { Logo } from "@/components/brand/logo";
 
 export function AuthFlow() {
   const router = useRouter();
@@ -73,7 +74,7 @@ export function AuthFlow() {
     return (
       <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center gap-6 px-5 py-10">
         <div className="rounded-[32px] border border-white/10 bg-white/5 p-7 shadow-2xl shadow-black/30 backdrop-blur">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-300">코토바 스피크</p>
+          <Logo light />
           <h1 className="mt-3 text-4xl font-semibold text-white">부담 없이 짧게, 일본어로 말해보세요.</h1>
           <p className="mt-3 text-sm leading-6 text-stone-300">
             한국인 학습자를 위해 만든 일본어 회화 연습 앱입니다. 짧은 상황형 연습, 구조화 피드백, 약한 표현 복습, 진도 추적을 한 번에 제공합니다.
@@ -132,7 +133,7 @@ export function AuthFlow() {
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center gap-5 px-5 py-10">
       <section className="rounded-[32px] border border-white/10 bg-white/5 p-7 shadow-2xl shadow-black/30 backdrop-blur">
-        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-300">코토바 스피크 MVP</p>
+        <Logo light />
         <h1 className="mt-3 text-4xl font-semibold leading-tight text-white">짧고 반복 가능한 드릴로 일본어 말하기를 늘려보세요.</h1>
         <p className="mt-3 text-sm leading-6 text-stone-300">
           모바일 중심 연습, 상황 카드, 브라우저 음성 입력 베타, 구조화 피드백, 가벼운 진도 추적을 제공합니다.
