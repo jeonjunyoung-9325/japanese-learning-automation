@@ -1,60 +1,127 @@
-export type VocabularyItem = {
+export type JapaneseLevel = "complete-beginner" | "beginner" | "lower-intermediate";
+export type LearningGoal = "travel" | "daily-conversation" | "work" | "jlpt-support";
+export type Difficulty = "complete-beginner" | "beginner" | "lower-intermediate";
+export type ReviewState = "new" | "weak" | "improving" | "mastered";
+export type InputMode = "text" | "voice";
+
+export type UserProfile = {
+  id: string;
+  email?: string | null;
+  displayName: string;
+  japaneseLevel?: JapaneseLevel;
+  learningGoal?: LearningGoal;
+  onboardingCompleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type LessonPrompt = {
+  id: string;
+  situation: string;
+  instructionKo: string;
+  targetAnswer: string;
+  hints: string[];
+  keyExpressionIds: string[];
+};
+
+export type LessonExpression = {
   id: string;
   japanese: string;
   reading: string;
-  meaning: string;
-  example: string;
-  exampleReading: string;
-  exampleMeaning: string;
+  meaningKo: string;
+  notesKo: string;
 };
 
-export type QuestItem = {
+export type LessonDialogueTurn = {
+  speaker: "staff" | "learner";
+  japanese: string;
+  reading: string;
+  meaningKo: string;
+};
+
+export type Lesson = {
   id: string;
   title: string;
-  description: string;
-  xpReward: number;
-  status: "ACTIVE" | "COMPLETED";
+  category: string;
+  difficulty: Difficulty;
+  lessonGoal: string;
+  explanationKo: string;
+  estimatedMinutes: number;
+  expressions: LessonExpression[];
+  miniDialogue: LessonDialogueTurn[];
+  prompts: LessonPrompt[];
 };
 
-export type NotionPageIds = {
-  dailyRoutinePageId?: string;
-  vocabularyPageIds: string[];
-  questPageIds: string[];
+export type FeedbackBreakdown = {
+  naturalness: number;
+  grammar: number;
+  vocabulary: number;
 };
 
-export type NotionSyncHistoryItem = {
-  syncedAt: string;
-  notionPageIds: NotionPageIds;
+export type PracticeFeedback = {
+  scores: FeedbackBreakdown;
+  overallScore: number;
+  correctedSentence: string;
+  naturalAlternative: string;
+  explanationKo: string;
+  encouragement: string;
+  matchedExpressions: string[];
+  weakExpressions: string[];
 };
 
-export type DailyRoutine = {
+export type PracticeAttempt = {
   id: string;
-  date: string;
-  theme: string;
-  summary: string;
-  totalXp: number;
-  earnedXp: number;
-  vocabulary: VocabularyItem[];
-  quests: QuestItem[];
+  lessonId: string;
+  promptId: string;
+  userId: string;
+  answer: string;
+  inputMode: InputMode;
+  feedback: PracticeFeedback;
   createdAt: string;
-  notionPageIds?: NotionPageIds;
-  notionSyncHistory?: NotionSyncHistoryItem[];
 };
 
-export type StoreShape = {
-  routinesByDate: Record<string, DailyRoutine>;
-  generationLog: Array<{
-    date: string;
-    idempotencyKey: string;
-    generatedAt: string;
-    duplicate: boolean;
-    routineId?: string;
-  }>;
+export type ReviewItem = {
+  id: string;
+  userId: string;
+  expression: string;
+  meaningKo: string;
+  lessonId: string;
+  state: ReviewState;
+  lastScore: number;
+  updatedAt: string;
 };
 
-export type LessonGenerationPayload = {
-  theme: string;
-  summary: string;
-  vocabulary: VocabularyItem[];
-  quests: QuestItem[];
+export type DailyProgress = {
+  id: string;
+  userId: string;
+  date: string;
+  attemptsCount: number;
+  completedLessons: number;
+  averageScore: number;
+};
+
+export type Streak = {
+  id: string;
+  userId: string;
+  currentStreak: number;
+  bestStreak: number;
+  lastPracticeDate?: string | null;
+};
+
+export type DashboardStats = {
+  recommendedLesson: Lesson;
+  streak: number;
+  completedLessons: number;
+  averageScore: number;
+  recentWeakExpressions: ReviewItem[];
+};
+
+export type AppMode = "guest" | "supabase";
+
+export type PersistedAppState = {
+  profile: UserProfile;
+  attempts: PracticeAttempt[];
+  reviewItems: ReviewItem[];
+  dailyProgress: DailyProgress[];
+  streak: Streak;
 };

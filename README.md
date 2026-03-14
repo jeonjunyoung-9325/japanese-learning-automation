@@ -1,343 +1,216 @@
-# Japanese Learning Automation MVP
+# Kotoba Speak MVP
 
-Next.js + TypeScript + Notion API + OpenAI API 기반의 일본어 학습 자동화 시스템입니다.
+Kotoba Speak is a mobile-first Japanese speaking practice app for Korean learners. It focuses on short scenario drills, easy-to-read structured feedback, weak-expression review, and simple progress tracking.
 
-가정:
-- 단일 사용자 MVP입니다.
-- 배포 환경은 로컬 또는 Vercel입니다.
-- Notion DB는 직접 생성하며, 속성명은 아래 표와 정확히 맞춰야 합니다.
-- 로컬 개발 편의를 위해 `OPENAI_ENABLE_MOCK=true`, `NOTION_SKIP_SYNC=true` 모드를 지원합니다.
+This MVP is intentionally simple:
 
-## 1. 폴더 구조
+- Frontend: Next.js App Router + TypeScript + Tailwind CSS
+- Backend: Supabase Auth + Supabase Postgres
+- Deployment: Vercel Hobby
+- Voice input: browser Web Speech API only
+- Feedback: deterministic rule-based engine, with an optional LLM hook left disabled unless you later add an API key
+
+## What the app does
+
+- Email sign up and log in with Supabase Auth
+- Guest/demo mode for testing without setup
+- Onboarding for level and learning goal
+- Dashboard with recommended lesson, streak, completed lessons, average score, and recent weak expressions
+- 20+ seeded scenario lessons
+- Text answers and optional voice-to-text input
+- Structured feedback after each answer
+- Weak-expression review list
+- Progress tracking for attempts, scores, daily progress, and streaks
+
+## Why this architecture is simple
+
+- The app is mostly a client-side Next.js experience, so there is very little backend code to maintain.
+- Supabase handles auth and storage, which avoids building a custom server.
+- Voice is browser-only, so there are no speech-processing costs.
+- The feedback engine is deterministic and local, so the MVP works without paid AI APIs.
+- Seed lessons are bundled in code for reliability, and SQL files are included for Supabase setup.
+
+## Folder structure
 
 ```text
-.
-├── app
-│   ├── api
-│   │   ├── cron
-│   │   │   └── daily-generate
-│   │   │       └── route.ts
-│   │   └── generate
-│   │       └── route.ts
-│   │   └── notion
-│   │       └── generate
-│   │           └── route.ts
-│   ├── globals.css
-│   ├── layout.tsx
-│   └── page.tsx
-├── components
-│   └── generate-button.tsx
-│   └── sync-progress-button.tsx
-├── data
-│   └── .gitkeep
-├── lib
-│   ├── date.ts
-│   ├── env.ts
-│   ├── notion.ts
-│   ├── openai.ts
-│   ├── services
-│   │   └── daily-generator.ts
-│   ├── store.ts
-│   └── types.ts
-├── .env.example
-├── .gitignore
-├── next.config.ts
-├── next-env.d.ts
-├── package.json
-├── README.md
-├── tsconfig.json
-└── vercel.json
+app/
+  (app)/
+    dashboard/
+    lessons/
+    profile/
+    review/
+  api/feedback/
+components/
+  auth/
+  dashboard/
+  layout/
+  lesson/
+  profile/
+  review/
+hooks/
+lib/
+  demo/
+  feedbackEngine/
+  supabase/
+  utils/
+supabase/
+  schema.sql
+  seed.sql
+tests/
 ```
 
-## 2. 필요한 파일 전체 목록
+## Important files
 
-- `package.json`
-- `tsconfig.json`
-- `next-env.d.ts`
-- `next.config.ts`
-- `.gitignore`
-- `.env.example`
-- `vercel.json`
-- `app/globals.css`
-- `app/layout.tsx`
-- `app/page.tsx`
-- `app/api/generate/route.ts`
-- `app/api/cron/daily-generate/route.ts`
-- `app/api/notion/generate/route.ts`
-- `components/generate-button.tsx`
-- `components/sync-progress-button.tsx`
-- `lib/types.ts`
-- `lib/date.ts`
-- `lib/env.ts`
-- `lib/store.ts`
-- `lib/notion.ts`
-- `lib/openai.ts`
-- `lib/services/daily-generator.ts`
-- `data/.gitkeep`
-- `README.md`
+- `app/page.tsx`: entry screen for auth and onboarding
+- `app/(app)/*`: main logged-in app screens
+- `app/api/feedback/route.ts`: feedback endpoint
+- `components/auth/app-provider.tsx`: app state, guest mode, Supabase sync
+- `components/lesson/lesson-practice-screen.tsx`: practice flow
+- `hooks/use-voice-input.ts`: browser speech-to-text wrapper
+- `lib/demo/lessons.ts`: bundled lesson content
+- `lib/feedbackEngine/ruleBasedEngine.ts`: deterministic scoring logic
+- `supabase/schema.sql`: database schema and policies
+- `supabase/seed.sql`: starter lesson rows
 
-## 3. Notion DB 스키마
+## Local install
 
-### Daily Routine DB
-
-Database 이름 예시: `Daily Routine`
-
-필수 속성:
-- `이름` : Title
-- `날짜` : Date
-- `주제` : Rich text
-- `요약` : Rich text
-- `상태` : Select
-- `총 XP` : Number
-- `획득 XP` : Number
-- `루틴 ID` : Rich text
-
-`Status` 값 예시:
-- `생성됨`
-
-### Vocabulary DB
-
-Database 이름 예시: `Vocabulary`
-
-필수 속성:
-- `이름` : Title
-- `날짜` : Date
-- `일본어` : Rich text
-- `읽기` : Rich text
-- `뜻` : Rich text
-- `예문` : Rich text
-- `예문 읽기` : Rich text
-- `예문 뜻` : Rich text
-- `루틴 ID` : Rich text
-
-### Quest Tracker DB
-
-Database 이름 예시: `Quest Tracker`
-
-필수 속성:
-- `이름` : Title
-- `날짜` : Date
-- `설명` : Rich text
-- `XP` : Number
-- `상태` : Select
-- `완료` : Checkbox
-- `루틴 ID` : Rich text
-
-`Status` 값 예시:
-- `진행중`
-- `완료`
-
-## 4. 설정 및 실행 방법
-
-### 4-1. 환경 변수 준비
-
-```bash
-cp .env.example .env
-```
-
-로컬 테스트용 최소 설정:
-
-```env
-APP_TIMEZONE=Asia/Seoul
-APP_BASE_URL=http://localhost:3000
-CRON_SECRET=change-me
-NOTION_BUTTON_SECRET=change-me-notion-button
-OPENAI_ENABLE_MOCK=true
-NOTION_SKIP_SYNC=true
-```
-
-실제 OpenAI/Notion 연동 설정:
-
-```env
-OPENAI_API_KEY=...
-OPENAI_MODEL=gpt-4o-mini
-OPENAI_ENABLE_MOCK=false
-
-NOTION_TOKEN=secret_xxx
-NOTION_DAILY_ROUTINE_DB_ID=...
-NOTION_VOCABULARY_DB_ID=...
-NOTION_QUEST_TRACKER_DB_ID=...
-NOTION_SKIP_SYNC=false
-```
-
-### 4-2. 패키지 설치
+1. Install dependencies:
 
 ```bash
 npm install
 ```
 
-### 4-3. 개발 서버 실행
+2. Copy env file:
+
+```bash
+cp .env.example .env.local
+```
+
+3. Add your Supabase project values if you want real auth and persistence:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+```
+
+4. Start the app:
 
 ```bash
 npm run dev
 ```
 
-브라우저에서 [http://localhost:3000](http://localhost:3000) 접속 후 `오늘 학습 수동 생성` 버튼을 누르면:
-- 오늘 날짜 기준 루틴 생성
-- 중복 생성이면 기존 데이터 반환
-- `NOTION_SKIP_SYNC=false`면 Notion DB에 저장
-- 로컬 상태는 `data/state.json`에 저장
+5. Open [http://localhost:3000](http://localhost:3000)
 
-`퀘스트 진행 동기화` 버튼을 누르면:
-- Notion `퀘스트 추적기`의 `완료` 체크박스 또는 `상태` 값을 읽음
-- 완료된 퀘스트 XP를 합산
-- `일일 루틴`의 `획득 XP` 값을 갱신
+If you do not add Supabase env vars yet, guest mode still works and lets you test the whole flow in one browser.
 
-## 5. 하루 1회 자동 생성 방법
+## How to connect Supabase
 
-### Vercel Cron
+1. Create a free Supabase project.
+2. Open the SQL editor.
+3. Run [`supabase/schema.sql`](/Users/juna/codex_juna/일본어/supabase/schema.sql).
+4. Run [`supabase/seed.sql`](/Users/juna/codex_juna/일본어/supabase/seed.sql).
+5. In Supabase Auth, enable Email auth.
+6. Copy the project URL and anon key into `.env.local`.
 
-`vercel.json`에 다음 cron이 포함되어 있습니다.
+## Database tables explained
 
-```json
-{
-  "crons": [
-    {
-      "path": "/api/cron/daily-generate",
-      "schedule": "0 6 * * *"
-    }
-  ]
-}
+- `profiles`: learner profile, onboarding answers, and basic display info
+- `lessons`: lesson metadata plus JSON seed content for prompts, dialogue, and expressions
+- `lesson_expressions`: normalized key-expression rows for future admin tooling or analytics
+- `lesson_dialogues`: normalized mini-dialogue rows for future querying
+- `practice_attempts`: every submitted answer plus its structured feedback
+- `review_items`: weak or improving expressions that should be revisited
+- `daily_progress`: per-day attempt counts, completed lessons, and average score
+- `streaks`: current streak, best streak, and last practice date
+
+## Free-tier reality
+
+What is free in this MVP:
+
+- Next.js on Vercel Hobby
+- Supabase free tier for auth and Postgres
+- Browser voice input through the user’s device
+- Rule-based feedback engine
+
+What may cost money later:
+
+- Higher Supabase usage if many users join
+- Paid AI feedback if you replace the rule-based engine with LLM scoring
+- Advanced speech features like pronunciation scoring or server audio processing
+
+## Deployment on Vercel
+
+1. Push this project to GitHub.
+2. Create a Vercel project and import the repo.
+3. Add these environment variables in Vercel:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+OPENAI_API_KEY=
 ```
 
-한국 시간 오전 6시에 호출되도록 의도한 예시이며, 실제 해석은 배포 환경의 cron 설정에 따라 달라질 수 있으니 배포 플랫폼 시간대를 확인하세요.
+4. Deploy.
 
-cron 호출 시 인증 헤더 필요:
+The app does not require cron jobs, queues, WebSockets, or heavy storage for the MVP.
+
+## Voice feature notes
+
+- Voice input uses `SpeechRecognition` in the browser only.
+- Chrome and Edge are the priority browsers.
+- Unsupported browsers fall back to text input automatically.
+- The app does not store or upload audio.
+- This MVP does not do pronunciation scoring.
+
+## How feedback works today
+
+The current engine checks:
+
+- overlap with the target answer
+- whether key expressions are present
+- simple sentence-length heuristics
+- a few lightweight grammar hints like polite endings and particle presence
+
+This keeps the app cheap, fast, and predictable for MVP testing.
+
+## How to add real AI feedback later
+
+The project already includes:
+
+- `lib/feedbackEngine/ruleBasedEngine.ts`
+- `lib/feedbackEngine/optionalLLMEngine.ts`
+- `lib/feedbackEngine/index.ts`
+
+To upgrade later:
+
+1. Replace the stub in `optionalLLMEngine.ts`
+2. Call your chosen LLM only when `OPENAI_API_KEY` exists
+3. Keep the same response shape so the UI does not need to change
+4. Use the rule-based engine as a fallback if the AI request fails
+
+## How to add richer voice later
+
+If you later want more advanced voice features, the simplest next steps are:
+
+1. Add client-side recording for playback practice
+2. Add pronunciation comparison only for selected premium flows
+3. Use a paid speech API only if user demand proves it is worth the cost
+
+For MVP, the current browser-only speech-to-text approach is the right tradeoff.
+
+## Testing
+
+Run:
 
 ```bash
-curl -H "Authorization: Bearer change-me" http://localhost:3000/api/cron/daily-generate
+npm run typecheck
+npm run test
+npm run build
 ```
 
-## 6. Notion 버튼 연동 방법
+## Notes for a non-technical founder
 
-Notion 버튼에서 webhook을 호출해 오늘 학습을 생성할 수 있습니다.
-
-추천 엔드포인트:
-
-```text
-POST /api/notion/generate?secret=<NOTION_BUTTON_SECRET>
-```
-
-로컬 예시:
-
-```text
-http://localhost:3000/api/notion/generate?secret=change-me-notion-button
-```
-
-배포 예시:
-
-```text
-https://your-domain.com/api/notion/generate?secret=change-me-notion-button
-```
-
-Notion 버튼 설정 순서:
-
-1. Notion 페이지에서 `/button` 입력
-2. 버튼 이름을 `오늘 일본어 생성`으로 지정
-3. 액션에서 `Send webhook` 선택
-4. URL에 위 엔드포인트 입력
-5. 메서드는 `POST`
-6. 버튼 클릭
-
-이 버튼은 기존 중복 방지 로직을 그대로 사용하므로 같은 날짜에는 새 루틴을 다시 만들지 않습니다.
-
-## 7. 중복 생성 방지 방식
-
-- 기준 키: `daily-routine:YYYY-MM-DD`
-- 저장 위치: `data/state.json`
-- 오늘 날짜 루틴이 이미 있으면 새 생성 없이 기존 데이터 반환
-- 최근 14일 어휘와 동일한 `japanese + reading` 조합이 나오면 생성 실패 처리
-
-## 8. 테스트 방법
-
-### 로컬 mock 테스트
-
-1. `.env`에서 아래 값을 유지합니다.
-   - `OPENAI_ENABLE_MOCK=true`
-   - `NOTION_SKIP_SYNC=true`
-2. 서버 실행:
-
-```bash
-npm run dev
-```
-
-3. 수동 생성 API 테스트:
-
-```bash
-curl -X POST http://localhost:3000/api/generate
-```
-
-4. Notion 버튼용 webhook 테스트:
-
-```bash
-curl -X POST "http://localhost:3000/api/notion/generate?secret=change-me-notion-button"
-```
-
-5. 중복 방지 확인:
-   - 같은 날 다시 한 번 `POST /api/generate` 호출
-   - `duplicate: true` 응답 확인
-
-### 실연동 테스트
-
-1. Notion DB 3개 생성
-2. `.env`에 OpenAI/Notion 실키 입력
-3. 아래 값 설정
-   - `OPENAI_ENABLE_MOCK=false`
-   - `NOTION_SKIP_SYNC=false`
-4. `POST /api/generate` 호출
-5. Notion의 `Daily Routine`, `Vocabulary`, `Quest Tracker` DB에 페이지 생성 확인
-6. `Quest Tracker`에서 `완료` 체크박스를 바꾼 뒤 `퀘스트 진행 동기화` 버튼 또는 `POST /api/sync-progress` 호출
-
-## 9. API 요약
-
-### `POST /api/generate`
-
-오늘 날짜 기준 루틴을 생성합니다.
-
-응답 예시:
-
-```json
-{
-  "ok": true,
-  "duplicate": false,
-  "message": "2026-03-13 루틴 생성과 저장이 완료되었습니다."
-}
-```
-
-### `GET /api/cron/daily-generate`
-
-하루 1회 자동 생성을 위한 cron 엔드포인트입니다.
-
-헤더:
-
-```text
-Authorization: Bearer <CRON_SECRET>
-```
-
-### `POST /api/notion/generate?secret=<NOTION_BUTTON_SECRET>`
-
-Notion 버튼 webhook용 엔드포인트입니다.
-
-응답 예시:
-
-```json
-{
-  "ok": true,
-  "duplicate": false,
-  "message": "2026-03-13 루틴 생성과 저장이 완료되었습니다.",
-  "routineId": "60a5dcdadeec291d",
-  "date": "2026-03-13",
-  "theme": "카페에서 주문하기"
-}
-```
-
-### `POST /api/sync-progress`
-
-오늘 `퀘스트 추적기`의 완료 상태를 읽어 `획득 XP`를 다시 계산합니다.
-
-## 10. 구현상 합리적 가정
-
-- 사용자별 멀티 계정 기능은 아직 없습니다.
-- XP 누적은 Notion보다는 일일 루틴 생성과 퀘스트 생성까지를 우선 구현했습니다.
-- Notion relation 대신 `Routine ID`를 공통 키로 저장해 MVP 연결을 단순화했습니다.
-- 영구 저장소는 DB 대신 `data/state.json`을 사용했습니다. 추후 PostgreSQL/Prisma로 교체하기 쉽도록 서비스 로직은 `lib/services`에 분리했습니다.
+- Guest mode is your fastest way to test the full product without setup.
+- Supabase setup is the only required backend step.
+- Lesson content is easy to edit in [`lib/demo/lessons.ts`](/Users/juna/codex_juna/일본어/lib/demo/lessons.ts).
+- If something feels too complex, keep the rule-based feedback and browser voice input for longer. They are the reason this MVP stays cheap and maintainable.
