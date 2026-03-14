@@ -410,6 +410,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   function toggleWordMastered(wordId: string) {
     updateStudyPreferences((current) => ({
       ...current,
+      todayWordIds: current.todayWordIds.filter((item) => item !== wordId),
       masteredWordIds: toggleId(current.masteredWordIds, wordId),
     }));
   }
@@ -417,6 +418,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   function toggleWordToday(wordId: string) {
     updateStudyPreferences((current) => ({
       ...current,
+      masteredWordIds: current.masteredWordIds.filter((item) => item !== wordId),
       todayWordIds: toggleId(current.todayWordIds, wordId),
     }));
   }
@@ -431,6 +433,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   function toggleSentenceMastered(sentenceId: string) {
     updateStudyPreferences((current) => ({
       ...current,
+      todaySentenceIds: current.todaySentenceIds.filter((item) => item !== sentenceId),
       masteredSentenceIds: toggleId(current.masteredSentenceIds, sentenceId),
     }));
   }
@@ -438,6 +441,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   function toggleSentenceToday(sentenceId: string) {
     updateStudyPreferences((current) => ({
       ...current,
+      masteredSentenceIds: current.masteredSentenceIds.filter((item) => item !== sentenceId),
       todaySentenceIds: toggleId(current.todaySentenceIds, sentenceId),
     }));
   }

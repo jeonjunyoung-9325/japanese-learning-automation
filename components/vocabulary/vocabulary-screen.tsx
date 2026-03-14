@@ -10,19 +10,14 @@ const tabs = [
   { id: "sentences", label: "문장" },
 ] as const;
 
-const collectionFilters = [
-  { id: "all", label: "전체" },
-  { id: "today", label: "오늘 외울 것" },
-  { id: "favorite", label: "즐겨찾기" },
-  { id: "mastered", label: "암기 완료" },
-] as const;
-
 const difficulties: Array<{ id: "all" | Difficulty; label: string }> = [
   { id: "all", label: "전체" },
   { id: "complete-beginner", label: "완전 초급" },
   { id: "beginner", label: "초급" },
   { id: "lower-intermediate", label: "초중급" },
 ];
+
+type CollectionFilter = "all" | "today" | "favorite" | "mastered";
 
 export function VocabularyScreen() {
   const {
@@ -38,12 +33,23 @@ export function VocabularyScreen() {
   } = useApp();
   const [tab, setTab] = useState<(typeof tabs)[number]["id"]>("words");
   const [difficulty, setDifficulty] = useState<"all" | Difficulty>("all");
-  const [collectionFilter, setCollectionFilter] = useState<(typeof collectionFilters)[number]["id"]>("all");
+  const [collectionFilter, setCollectionFilter] = useState<CollectionFilter>("all");
   const [query, setQuery] = useState("");
   const [sentenceCardIndex, setSentenceCardIndex] = useState(0);
   const [showSentenceMeaning, setShowSentenceMeaning] = useState(true);
 
   const normalizedQuery = query.trim().toLowerCase();
+  const actionableTodayWordCount = studyPreferences.todayWordIds.filter(
+    (id) => !studyPreferences.masteredWordIds.includes(id),
+  ).length;
+  const actionableTodaySentenceCount = studyPreferences.todaySentenceIds.filter(
+    (id) => !studyPreferences.masteredSentenceIds.includes(id),
+  ).length;
+  const currentFavoriteCount =
+    tab === "words" ? studyPreferences.favoriteWordIds.length : studyPreferences.favoriteSentenceIds.length;
+  const currentMasteredCount =
+    tab === "words" ? studyPreferences.masteredWordIds.length : studyPreferences.masteredSentenceIds.length;
+  const currentTotalCount = tab === "words" ? vocabularyWords.length : studySentences.length;
 
   const visibleWords = useMemo(
     () =>
@@ -116,28 +122,32 @@ export function VocabularyScreen() {
 
       <section className="rounded-[28px] border border-white/10 bg-white/5 p-5">
         <div className="grid gap-4">
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <StatCard
-              label="오늘 외울 단어"
-              value={`${studyPreferences.todayWordIds.length}개`}
-              active={tab === "words" && collectionFilter === "today"}
+              label="전체"
+              value={`${currentTotalCount}개`}
+              active={collectionFilter === "all"}
               onClick={() => {
-                setTab("words");
+                setCollectionFilter("all");
+              }}
+            />
+            <StatCard
+              label={tab === "words" ? "오늘 외울 단어" : "오늘 외울 문장"}
+              value={`${tab === "words" ? actionableTodayWordCount : actionableTodaySentenceCount}개`}
+              active={collectionFilter === "today"}
+              onClick={() => {
                 setCollectionFilter("today");
               }}
             />
             <StatCard
-              label="오늘 외울 문장"
-              value={`${studyPreferences.todaySentenceIds.length}개`}
-              active={tab === "sentences" && collectionFilter === "today"}
-              onClick={() => {
-                setTab("sentences");
-                setCollectionFilter("today");
-              }}
+              label="즐겨찾기"
+              value={`${currentFavoriteCount}개`}
+              active={collectionFilter === "favorite"}
+              onClick={() => setCollectionFilter("favorite")}
             />
             <StatCard
               label="암기 완료"
-              value={`${studyPreferences.masteredWordIds.length + studyPreferences.masteredSentenceIds.length}개`}
+              value={`${currentMasteredCount}개`}
               active={collectionFilter === "mastered"}
               onClick={() => setCollectionFilter("mastered")}
             />
@@ -163,17 +173,6 @@ export function VocabularyScreen() {
               className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm outline-none placeholder:text-stone-500"
             />
             <div className="flex flex-wrap gap-2">
-              {collectionFilters.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => setCollectionFilter(item.id)}
-                  className={`rounded-full px-4 py-2 text-sm ${collectionFilter === item.id ? "bg-orange-400 font-semibold text-stone-950" : "border border-white/10 bg-white/5 text-stone-200"}`}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-            <div className="flex flex-wrap gap-2">
               {difficulties.map((item) => (
                 <button
                   key={item.id}
@@ -185,11 +184,9 @@ export function VocabularyScreen() {
               ))}
             </div>
           </div>
-
-          <div className="grid grid-cols-3 gap-3">
-            <StatCard label="전체 단어" value={`${vocabularyWords.length}개`} />
-            <StatCard label="전체 문장" value={`${studySentences.length}개`} />
+          <div className="grid grid-cols-2 gap-3">
             <StatCard label="현재 보기" value={`${visibleCount}개`} />
+            <StatCard label="선택 탭" value={tab === "words" ? "단어" : "문장"} />
           </div>
         </div>
       </section>
