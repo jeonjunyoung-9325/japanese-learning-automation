@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useApp } from "@/components/auth/app-provider";
 import { useVoiceInput } from "@/hooks/use-voice-input";
 import { getCategoryLabel, getLessonTitleLabel } from "@/lib/utils/labels";
@@ -26,6 +26,11 @@ export function LessonPracticeScreen({
   const { listening, start, stop, reset, supported } = useVoiceInput((transcript) => {
     setAnswer(transcript);
   });
+  const keyExpressions = useMemo(
+    () =>
+      lesson?.expressions.filter((expression) => prompt?.keyExpressionIds.includes(expression.id)) ?? [],
+    [lesson, prompt],
+  );
 
   if (!lesson || !prompt) {
     return (
@@ -117,6 +122,19 @@ export function LessonPracticeScreen({
         <div className="mt-4 rounded-[24px] border border-orange-300/20 bg-orange-400/10 p-4">
           <p className="text-xs uppercase tracking-[0.18em] text-orange-200">따라 말할 문장</p>
           <p className="mt-2 text-lg font-semibold leading-8 text-white">{prompt.targetAnswer}</p>
+          {keyExpressions.length > 0 && (
+            <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-4">
+              <p className="text-xs uppercase tracking-[0.18em] text-stone-400">한국어 뜻</p>
+              <div className="mt-3 grid gap-2">
+                {keyExpressions.map((expression) => (
+                  <div key={expression.id} className="rounded-2xl bg-white/5 px-3 py-3">
+                    <p className="text-sm font-medium text-white">{expression.japanese}</p>
+                    <p className="mt-1 text-sm text-stone-300">{expression.meaningKo}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <textarea
