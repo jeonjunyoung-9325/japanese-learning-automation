@@ -18,6 +18,11 @@ const difficulties: Array<{ id: "all" | Difficulty; label: string }> = [
 ];
 
 type CollectionFilter = "all" | "today" | "favorite" | "mastered";
+const difficultyOrder: Record<Difficulty, number> = {
+  "complete-beginner": 0,
+  beginner: 1,
+  "lower-intermediate": 2,
+};
 
 export function VocabularyScreen() {
   const {
@@ -51,43 +56,61 @@ export function VocabularyScreen() {
 
   const visibleWords = useMemo(
     () =>
-      vocabularyWords.filter((item) => {
-        const matchesDifficulty = difficulty === "all" || item.difficulty === difficulty;
-        const haystack = `${item.japanese} ${item.reading} ${item.meaningKo} ${item.category}`.toLowerCase();
-        const matchesQuery = !normalizedQuery || haystack.includes(normalizedQuery);
-        const isFavorite = studyPreferences.favoriteWordIds.includes(item.id);
-        const isMastered = studyPreferences.masteredWordIds.includes(item.id);
-        const isToday = studyPreferences.todayWordIds.includes(item.id);
-        const matchesCollection =
-          collectionFilter === "all" ||
-          (collectionFilter === "today" && isToday) ||
-          (collectionFilter === "favorite" && isFavorite) ||
-          (collectionFilter === "mastered" && isMastered);
-        const visibleByMasteredState = collectionFilter === "mastered" ? isMastered : !isMastered;
+      [...vocabularyWords]
+        .filter((item) => {
+          const matchesDifficulty = difficulty === "all" || item.difficulty === difficulty;
+          const haystack = `${item.japanese} ${item.reading} ${item.meaningKo} ${item.category}`.toLowerCase();
+          const matchesQuery = !normalizedQuery || haystack.includes(normalizedQuery);
+          const isFavorite = studyPreferences.favoriteWordIds.includes(item.id);
+          const isMastered = studyPreferences.masteredWordIds.includes(item.id);
+          const isToday = studyPreferences.todayWordIds.includes(item.id);
+          const matchesCollection =
+            collectionFilter === "all" ||
+            (collectionFilter === "today" && isToday) ||
+            (collectionFilter === "favorite" && isFavorite) ||
+            (collectionFilter === "mastered" && isMastered);
+          const visibleByMasteredState = collectionFilter === "mastered" ? isMastered : !isMastered;
 
-        return matchesDifficulty && matchesQuery && matchesCollection && visibleByMasteredState;
-      }),
+          return matchesDifficulty && matchesQuery && matchesCollection && visibleByMasteredState;
+        })
+        .sort((left, right) => {
+          const difficultyDiff = difficultyOrder[left.difficulty] - difficultyOrder[right.difficulty];
+          if (difficultyDiff !== 0) {
+            return difficultyDiff;
+          }
+
+          return left.id.localeCompare(right.id);
+        }),
     [collectionFilter, difficulty, normalizedQuery, studyPreferences.favoriteWordIds, studyPreferences.masteredWordIds, studyPreferences.todayWordIds, vocabularyWords],
   );
 
   const visibleSentences = useMemo(
     () =>
-      studySentences.filter((item) => {
-        const matchesDifficulty = difficulty === "all" || item.difficulty === difficulty;
-        const haystack = `${item.japanese} ${item.reading} ${item.meaningKo} ${item.category} ${item.patternKo}`.toLowerCase();
-        const matchesQuery = !normalizedQuery || haystack.includes(normalizedQuery);
-        const isFavorite = studyPreferences.favoriteSentenceIds.includes(item.id);
-        const isMastered = studyPreferences.masteredSentenceIds.includes(item.id);
-        const isToday = studyPreferences.todaySentenceIds.includes(item.id);
-        const matchesCollection =
-          collectionFilter === "all" ||
-          (collectionFilter === "today" && isToday) ||
-          (collectionFilter === "favorite" && isFavorite) ||
-          (collectionFilter === "mastered" && isMastered);
-        const visibleByMasteredState = collectionFilter === "mastered" ? isMastered : !isMastered;
+      [...studySentences]
+        .filter((item) => {
+          const matchesDifficulty = difficulty === "all" || item.difficulty === difficulty;
+          const haystack = `${item.japanese} ${item.reading} ${item.meaningKo} ${item.category} ${item.patternKo}`.toLowerCase();
+          const matchesQuery = !normalizedQuery || haystack.includes(normalizedQuery);
+          const isFavorite = studyPreferences.favoriteSentenceIds.includes(item.id);
+          const isMastered = studyPreferences.masteredSentenceIds.includes(item.id);
+          const isToday = studyPreferences.todaySentenceIds.includes(item.id);
+          const matchesCollection =
+            collectionFilter === "all" ||
+            (collectionFilter === "today" && isToday) ||
+            (collectionFilter === "favorite" && isFavorite) ||
+            (collectionFilter === "mastered" && isMastered);
+          const visibleByMasteredState = collectionFilter === "mastered" ? isMastered : !isMastered;
 
-        return matchesDifficulty && matchesQuery && matchesCollection && visibleByMasteredState;
-      }),
+          return matchesDifficulty && matchesQuery && matchesCollection && visibleByMasteredState;
+        })
+        .sort((left, right) => {
+          const difficultyDiff = difficultyOrder[left.difficulty] - difficultyOrder[right.difficulty];
+          if (difficultyDiff !== 0) {
+            return difficultyDiff;
+          }
+
+          return left.id.localeCompare(right.id);
+        }),
     [collectionFilter, difficulty, normalizedQuery, studyPreferences.favoriteSentenceIds, studyPreferences.masteredSentenceIds, studyPreferences.todaySentenceIds, studySentences],
   );
 
