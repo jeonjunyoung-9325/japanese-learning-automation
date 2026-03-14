@@ -36,7 +36,7 @@ export function VocabularyScreen() {
   const [collectionFilter, setCollectionFilter] = useState<CollectionFilter>("all");
   const [query, setQuery] = useState("");
   const [sentenceCardIndex, setSentenceCardIndex] = useState(0);
-  const [showSentenceMeaning, setShowSentenceMeaning] = useState(true);
+  const [showSentenceMeaning, setShowSentenceMeaning] = useState(false);
 
   const normalizedQuery = query.trim().toLowerCase();
   const actionableTodayWordCount = studyPreferences.todayWordIds.filter(
@@ -284,8 +284,23 @@ export function VocabularyScreen() {
         ) : (
           <EmptyPanel text="조건에 맞는 단어가 아직 없어요. 검색어나 필터를 바꿔 보세요." />
         )
+      ) : visibleSentences.length > 0 ? (
+        <div className="grid gap-4">
+          {visibleSentences.map((item) => (
+            <SentenceListCard
+              key={item.id}
+              item={item}
+              favorite={studyPreferences.favoriteSentenceIds.includes(item.id)}
+              mastered={studyPreferences.masteredSentenceIds.includes(item.id)}
+              selectedForToday={studyPreferences.todaySentenceIds.includes(item.id)}
+              onToggleFavorite={() => toggleSentenceFavorite(item.id)}
+              onToggleMastered={() => toggleSentenceMastered(item.id)}
+              onToggleToday={() => toggleSentenceToday(item.id)}
+            />
+          ))}
+        </div>
       ) : (
-        !activeSentenceCard && <EmptyPanel text="조건에 맞는 문장이 아직 없어요. 검색어나 필터를 바꿔 보세요." />
+        <EmptyPanel text="조건에 맞는 문장이 아직 없어요. 검색어나 필터를 바꿔 보세요." />
       )}
     </div>
   );
@@ -328,6 +343,73 @@ function WordCard({
         {selectedForToday && <span className="rounded-full bg-sky-400/15 px-3 py-1 text-sky-200">오늘 외울 것</span>}
         {mastered && <span className="rounded-full bg-emerald-400/15 px-3 py-1 text-emerald-200">암기 완료</span>}
       </div>
+      <div className="mt-4 flex flex-wrap gap-2">
+        <ActionButton active={selectedForToday} label={selectedForToday ? "오늘 목록 해제" : "오늘 외울 것"} onClick={onToggleToday} />
+        <ActionButton active={favorite} label={favorite ? "즐겨찾기 해제" : "즐겨찾기"} onClick={onToggleFavorite} />
+        <ActionButton active={mastered} label={mastered ? "암기 완료 해제" : "암기 완료"} onClick={onToggleMastered} />
+      </div>
+    </div>
+  );
+}
+
+function SentenceListCard({
+  item,
+  favorite,
+  mastered,
+  selectedForToday,
+  onToggleFavorite,
+  onToggleMastered,
+  onToggleToday,
+}: {
+  item: StudySentence;
+  favorite: boolean;
+  mastered: boolean;
+  selectedForToday: boolean;
+  onToggleFavorite: () => void;
+  onToggleMastered: () => void;
+  onToggleToday: () => void;
+}) {
+  const [showMeaning, setShowMeaning] = useState(false);
+
+  return (
+    <div className="rounded-[28px] border border-white/10 bg-white/5 p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h2 className="text-2xl font-semibold text-white">{item.japanese}</h2>
+          <p className="mt-1 text-sm text-stone-400">{item.reading}</p>
+        </div>
+        <span className="rounded-full bg-orange-400/15 px-3 py-1 text-xs font-medium text-orange-200">
+          {getDifficultyLabel(item.difficulty)}
+        </span>
+      </div>
+
+      <div className="mt-4">
+        <button
+          onClick={() => setShowMeaning((current) => !current)}
+          className="rounded-2xl border border-white/10 bg-black/20 px-4 py-2 text-sm text-stone-100"
+        >
+          {showMeaning ? "뜻 숨기기" : "뜻 보기"}
+        </button>
+      </div>
+
+      {showMeaning && (
+        <>
+          <p className="mt-4 text-base text-stone-100">{item.meaningKo}</p>
+          <div className="mt-3 rounded-2xl border border-white/10 bg-black/20 p-3">
+            <p className="text-xs uppercase tracking-[0.16em] text-stone-500">패턴 포인트</p>
+            <p className="mt-2 text-sm text-stone-200">{item.patternKo}</p>
+          </div>
+        </>
+      )}
+
+      <div className="mt-4 flex flex-wrap gap-2 text-xs text-stone-400">
+        <span className="rounded-full bg-black/20 px-3 py-1">{item.category}</span>
+        <span className="rounded-full bg-black/20 px-3 py-1">{item.jlptLevel}</span>
+        {favorite && <span className="rounded-full bg-amber-400/15 px-3 py-1 text-amber-200">즐겨찾기</span>}
+        {selectedForToday && <span className="rounded-full bg-sky-400/15 px-3 py-1 text-sky-200">오늘 외울 것</span>}
+        {mastered && <span className="rounded-full bg-emerald-400/15 px-3 py-1 text-emerald-200">암기 완료</span>}
+      </div>
+
       <div className="mt-4 flex flex-wrap gap-2">
         <ActionButton active={selectedForToday} label={selectedForToday ? "오늘 목록 해제" : "오늘 외울 것"} onClick={onToggleToday} />
         <ActionButton active={favorite} label={favorite ? "즐겨찾기 해제" : "즐겨찾기"} onClick={onToggleFavorite} />
