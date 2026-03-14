@@ -114,6 +114,15 @@ export type StudySentence = {
   jlptLevel: "N5";
 };
 
+export type StudyPreferences = {
+  favoriteWordIds: string[];
+  masteredWordIds: string[];
+  todayWordIds: string[];
+  favoriteSentenceIds: string[];
+  masteredSentenceIds: string[];
+  todaySentenceIds: string[];
+};
+
 export type DailyProgress = {
   id: string;
   userId: string;

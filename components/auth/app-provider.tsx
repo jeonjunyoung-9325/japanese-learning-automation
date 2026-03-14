@@ -20,6 +20,7 @@ import type {
   PracticeFeedback,
   ReviewItem,
   StudySentence,
+  StudyPreferences,
   Streak,
   UserProfile,
   VocabularyWord,
@@ -32,6 +33,7 @@ import { calculateAverageScore, calculateStreak, updateReviewItems, upsertDailyP
 
 const LOCAL_STORAGE_KEY = "kotoba-speak-state";
 const LOCAL_GUEST_KEY = "kotoba-speak-guest";
+const LOCAL_STUDY_KEY_PREFIX = "kotoba-speak-study-preferences";
 
 type AppContextValue = {
   loading: boolean;
@@ -46,6 +48,13 @@ type AppContextValue = {
   streak: Streak | null;
   vocabularyWords: VocabularyWord[];
   studySentences: StudySentence[];
+  studyPreferences: StudyPreferences;
+  toggleWordFavorite: (wordId: string) => void;
+  toggleWordMastered: (wordId: string) => void;
+  toggleWordToday: (wordId: string) => void;
+  toggleSentenceFavorite: (sentenceId: string) => void;
+  toggleSentenceMastered: (sentenceId: string) => void;
+  toggleSentenceToday: (sentenceId: string) => void;
   signIn: (email: string, password: string) => Promise<{ error?: string; message?: string }>;
   signUp: (email: string, password: string) => Promise<{ error?: string; message?: string }>;
   continueAsGuest: () => Promise<void>;
@@ -116,6 +125,49 @@ function writeLocalState(state: LocalState) {
   window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
 }
 
+function createEmptyStudyPreferences(): StudyPreferences {
+  return {
+    favoriteWordIds: [],
+    masteredWordIds: [],
+    todayWordIds: [],
+    favoriteSentenceIds: [],
+    masteredSentenceIds: [],
+    todaySentenceIds: [],
+  };
+}
+
+function getStudyPreferencesKey(userId: string) {
+  return `${LOCAL_STUDY_KEY_PREFIX}:${userId}`;
+}
+
+function readStudyPreferences(userId: string): StudyPreferences {
+  if (typeof window === "undefined") {
+    return createEmptyStudyPreferences();
+  }
+
+  const raw = window.localStorage.getItem(getStudyPreferencesKey(userId));
+  if (!raw) {
+    return createEmptyStudyPreferences();
+  }
+
+  try {
+    return {
+      ...createEmptyStudyPreferences(),
+      ...(JSON.parse(raw) as Partial<StudyPreferences>),
+    };
+  } catch {
+    return createEmptyStudyPreferences();
+  }
+}
+
+function writeStudyPreferences(userId: string, preferences: StudyPreferences) {
+  window.localStorage.setItem(getStudyPreferencesKey(userId), JSON.stringify(preferences));
+}
+
+function toggleId(list: string[], targetId: string) {
+  return list.includes(targetId) ? list.filter((item) => item !== targetId) : [...list, targetId];
+}
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
@@ -125,6 +177,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>([]);
   const [dailyProgress, setDailyProgress] = useState<DailyProgress[]>([]);
   const [streak, setStreak] = useState<Streak | null>(null);
+  const [studyPreferences, setStudyPreferences] = useState<StudyPreferences>(createEmptyStudyPreferences());
 
   const supabaseConfig = getSupabaseConfig();
   const supabase = getSupabaseBrowserClient();
@@ -141,6 +194,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setReviewItems(local.reviewItems);
         setDailyProgress(local.dailyProgress);
         setStreak(local.streak);
+        setStudyPreferences(readStudyPreferences(local.profile.id));
         setLoading(false);
         return;
       }
@@ -167,6 +221,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           setReviewItems([]);
           setDailyProgress([]);
           setStreak(null);
+          setStudyPreferences(createEmptyStudyPreferences());
         }
         setLoading(false);
       });
@@ -261,6 +316,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       completedLessons: row.completed_lessons,
       averageScore: row.average_score,
     })));
+    setStudyPreferences(readStudyPreferences(userId));
     setStreak(
       streakRow
         ? {
@@ -310,6 +366,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setReviewItems(local.reviewItems);
     setDailyProgress(local.dailyProgress);
     setStreak(local.streak);
+    setStudyPreferences(readStudyPreferences(local.profile.id));
   }
 
   async function signOut() {
@@ -326,6 +383,63 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setReviewItems([]);
     setDailyProgress([]);
     setStreak(null);
+    setStudyPreferences(createEmptyStudyPreferences());
+  }
+
+  function updateStudyPreferences(
+    updater: (current: StudyPreferences) => StudyPreferences,
+  ) {
+    if (!profile) {
+      return;
+    }
+
+    setStudyPreferences((current) => {
+      const next = updater(current);
+      writeStudyPreferences(profile.id, next);
+      return next;
+    });
+  }
+
+  function toggleWordFavorite(wordId: string) {
+    updateStudyPreferences((current) => ({
+      ...current,
+      favoriteWordIds: toggleId(current.favoriteWordIds, wordId),
+    }));
+  }
+
+  function toggleWordMastered(wordId: string) {
+    updateStudyPreferences((current) => ({
+      ...current,
+      masteredWordIds: toggleId(current.masteredWordIds, wordId),
+    }));
+  }
+
+  function toggleWordToday(wordId: string) {
+    updateStudyPreferences((current) => ({
+      ...current,
+      todayWordIds: toggleId(current.todayWordIds, wordId),
+    }));
+  }
+
+  function toggleSentenceFavorite(sentenceId: string) {
+    updateStudyPreferences((current) => ({
+      ...current,
+      favoriteSentenceIds: toggleId(current.favoriteSentenceIds, sentenceId),
+    }));
+  }
+
+  function toggleSentenceMastered(sentenceId: string) {
+    updateStudyPreferences((current) => ({
+      ...current,
+      masteredSentenceIds: toggleId(current.masteredSentenceIds, sentenceId),
+    }));
+  }
+
+  function toggleSentenceToday(sentenceId: string) {
+    updateStudyPreferences((current) => ({
+      ...current,
+      todaySentenceIds: toggleId(current.todaySentenceIds, sentenceId),
+    }));
   }
 
   async function saveOnboarding(payload: {
@@ -511,6 +625,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
       streak,
       vocabularyWords: coreVocabularyWords,
       studySentences: coreStudySentences,
+      studyPreferences,
+      toggleWordFavorite,
+      toggleWordMastered,
+      toggleWordToday,
+      toggleSentenceFavorite,
+      toggleSentenceMastered,
+      toggleSentenceToday,
       signIn,
       signUp,
       continueAsGuest,
@@ -518,7 +639,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       saveOnboarding,
       submitAttempt,
     }),
-    [loading, session, supabaseConfig.isConfigured, isGuestMode, profile, attempts, reviewItems, dailyProgress, streak],
+    [loading, session, supabaseConfig.isConfigured, isGuestMode, profile, attempts, reviewItems, dailyProgress, streak, studyPreferences],
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
