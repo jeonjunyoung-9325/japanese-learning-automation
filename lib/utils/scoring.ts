@@ -107,7 +107,7 @@ function nextReviewState(score: number, currentState?: ReviewState): ReviewState
 
 export function updateReviewItems(
   existing: ReviewItem[],
-  weakExpressions: Array<{ expression: string; meaningKo: string; lessonId: string }>,
+  weakExpressions: Array<{ expression: string; meaningKo: string; lessonId: string; promptId: string }>,
   userId: string,
   score: number,
   updatedAt: string,
@@ -122,6 +122,7 @@ export function updateReviewItems(
         ...next[index],
         meaningKo: item.meaningKo,
         lessonId: item.lessonId,
+        promptId: item.promptId,
         lastScore: score,
         state: nextReviewState(score, next[index].state),
         updatedAt,
@@ -135,6 +136,7 @@ export function updateReviewItems(
       expression: item.expression,
       meaningKo: item.meaningKo,
       lessonId: item.lessonId,
+      promptId: item.promptId,
       state: nextReviewState(score, "new"),
       lastScore: score,
       updatedAt,

@@ -86,9 +86,24 @@ export type ReviewItem = {
   expression: string;
   meaningKo: string;
   lessonId: string;
+  promptId: string;
   state: ReviewState;
   lastScore: number;
   updatedAt: string;
+};
+
+export type VocabularyItem = {
+  id: string;
+  lessonId: string;
+  expressionId: string;
+  japanese: string;
+  reading: string;
+  meaningKo: string;
+  notesKo: string;
+  category: string;
+  lessonTitle: string;
+  mastered: boolean;
+  source: "lesson" | "review";
 };
 
 export type DailyProgress = {

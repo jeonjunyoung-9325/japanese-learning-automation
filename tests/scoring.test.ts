@@ -60,12 +60,13 @@ describe("scoring utilities", () => {
   it("updates review states from weak expressions", () => {
     const next = updateReviewItems(
       [],
-      [{ expression: "お願いします", meaningKo: "부탁합니다", lessonId: "lesson-2" }],
+      [{ expression: "お願いします", meaningKo: "부탁합니다", lessonId: "lesson-2", promptId: "p2" }],
       "user-1",
       58,
       "2026-03-15T08:00:00.000Z",
     );
 
     expect(next[0]?.state).toBe("weak");
+    expect(next[0]?.promptId).toBe("p2");
   });
 });

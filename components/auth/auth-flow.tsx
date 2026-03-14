@@ -29,6 +29,12 @@ export function AuthFlow() {
       return;
     }
 
+    if (mode === "signup" && password.length < 8) {
+      setError("비밀번호는 8자 이상이어야 합니다.");
+      setBusy(false);
+      return;
+    }
+
     const result = mode === "login" ? await signIn(email, password) : await signUp(email, password);
 
     if (result.error) {
@@ -139,8 +145,8 @@ export function AuthFlow() {
 
       <section className="rounded-[32px] border border-white/10 bg-stone-950/80 p-6">
         <div className="mb-4 flex gap-2 rounded-full bg-white/5 p-1 text-sm">
-          <button onClick={() => setMode("signup")} className={`flex-1 rounded-full px-4 py-2 ${mode === "signup" ? "bg-white text-stone-950" : "text-stone-300"}`}>회원가입</button>
-          <button onClick={() => setMode("login")} className={`flex-1 rounded-full px-4 py-2 ${mode === "login" ? "bg-white text-stone-950" : "text-stone-300"}`}>로그인</button>
+          <button onClick={() => setMode("signup")} className={`flex-1 rounded-full px-4 py-2 ${mode === "signup" ? "bg-orange-400 font-semibold text-stone-950" : "text-stone-300"}`}>회원가입</button>
+          <button onClick={() => setMode("login")} className={`flex-1 rounded-full px-4 py-2 ${mode === "login" ? "bg-orange-400 font-semibold text-stone-950" : "text-stone-300"}`}>로그인</button>
         </div>
 
         <div className="grid gap-3">

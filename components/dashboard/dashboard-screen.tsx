@@ -31,6 +31,12 @@ export function DashboardScreen() {
             레슨 시작
           </Link>
           <Link
+            href="/vocabulary"
+            className="rounded-2xl border border-orange-300/30 bg-stone-950/30 px-5 py-3 text-sm font-medium text-orange-100"
+          >
+            단어장 보기
+          </Link>
+          <Link
             href="/review"
             className="rounded-2xl border border-orange-300/30 bg-stone-950/30 px-5 py-3 text-sm font-medium text-orange-100"
           >

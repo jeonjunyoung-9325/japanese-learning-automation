@@ -6,13 +6,21 @@ import { useApp } from "@/components/auth/app-provider";
 import { useVoiceInput } from "@/hooks/use-voice-input";
 import { getCategoryLabel, getLessonTitleLabel } from "@/lib/utils/labels";
 
-export function LessonPracticeScreen({ lessonId }: { lessonId: string }) {
+export function LessonPracticeScreen({
+  lessonId,
+  initialPromptId,
+}: {
+  lessonId: string;
+  initialPromptId?: string;
+}) {
   const { lessons, submitAttempt } = useApp();
   const lesson = lessons.find((item) => item.id === lessonId);
   const [promptIndex, setPromptIndex] = useState(0);
   const [answer, setAnswer] = useState("");
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState<Awaited<ReturnType<typeof submitAttempt>> | null>(null);
+  const [showHints, setShowHints] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const prompt = lesson?.prompts[promptIndex];
   const progress = lesson ? ((promptIndex + (feedback ? 1 : 0)) / lesson.prompts.length) * 100 : 0;
@@ -39,8 +47,20 @@ export function LessonPracticeScreen({ lessonId }: { lessonId: string }) {
   const currentPrompt = prompt;
 
   useEffect(() => {
+    if (!initialPromptId) {
+      setPromptIndex(0);
+      return;
+    }
+
+    const nextIndex = currentLesson.prompts.findIndex((candidate) => candidate.id === initialPromptId);
+    setPromptIndex(nextIndex >= 0 ? nextIndex : 0);
+  }, [currentLesson, initialPromptId]);
+
+  useEffect(() => {
     reset();
     setAnswer("");
+    setShowHints(false);
+    setSubmitError("");
   }, [promptIndex, reset]);
 
   async function handleSubmit(inputMode: "text" | "voice") {
@@ -53,20 +73,28 @@ export function LessonPracticeScreen({ lessonId }: { lessonId: string }) {
     }
 
     setBusy(true);
-    const nextFeedback = await submitAttempt({
-      lesson: currentLesson,
-      prompt: currentPrompt,
-      answer,
-      inputMode,
-    });
-    setFeedback(nextFeedback);
-    setBusy(false);
+    setSubmitError("");
+
+    try {
+      const nextFeedback = await submitAttempt({
+        lesson: currentLesson,
+        prompt: currentPrompt,
+        answer,
+        inputMode,
+      });
+      setFeedback(nextFeedback);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "피드백을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   function handleNext() {
     reset();
     setFeedback(null);
     setAnswer("");
+    setSubmitError("");
     setPromptIndex((index) => Math.min(index + 1, currentLesson.prompts.length - 1));
   }
 
@@ -94,29 +122,53 @@ export function LessonPracticeScreen({ lessonId }: { lessonId: string }) {
         <h2 className="mt-2 text-xl font-semibold text-white">{prompt.situation}</h2>
         <p className="mt-2 text-sm leading-6 text-stone-300">{prompt.instructionKo}</p>
 
-        <div className="mt-4 grid gap-2">
-          {keyExpressions.map((expression) => (
-            <div key={expression.id} className="rounded-2xl border border-white/10 bg-white/5 p-3">
-              <div className="font-medium text-white">{expression.japanese}</div>
-              <div className="text-sm text-stone-400">{expression.reading}</div>
-              <div className="mt-1 text-sm text-stone-300">{expression.meaningKo}</div>
-            </div>
-          ))}
+        <div className="mt-4">
+          <button
+            onClick={() => setShowHints((current) => !current)}
+            className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-stone-100"
+          >
+            {showHints ? "힌트 숨기기" : "힌트 보기"}
+          </button>
         </div>
 
-        <textarea value={answer} onChange={(event) => setAnswer(event.target.value)} placeholder="여기에 일본어 답변을 입력해 보세요" className="mt-5 min-h-32 w-full rounded-[24px] border border-white/10 bg-black/20 px-4 py-4 text-base outline-none" />
+        {showHints && (
+          <div className="mt-4 grid gap-2">
+            {keyExpressions.map((expression) => (
+              <div key={expression.id} className="rounded-2xl border border-white/10 bg-white/5 p-3">
+                <div className="font-medium text-white">{expression.japanese}</div>
+                <div className="text-sm text-stone-400">{expression.reading}</div>
+                <div className="mt-1 text-sm text-stone-300">{expression.meaningKo}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <textarea
+          value={answer}
+          onChange={(event) => setAnswer(event.target.value)}
+          placeholder="여기에 일본어 답변을 입력해 보세요"
+          className="mt-5 min-h-32 w-full rounded-[24px] border border-white/10 bg-black/20 px-4 py-4 text-base outline-none"
+        />
         <div className="mt-3 flex gap-3">
           {supported ? (
-            <button onClick={listening ? stop : start} className={`rounded-2xl px-4 py-3 text-sm font-medium ${listening ? "bg-rose-400 text-stone-950" : "border border-white/10 bg-white/5 text-stone-100"}`}>
+            <button
+              onClick={listening ? stop : start}
+              className={`rounded-2xl px-4 py-3 text-sm font-medium ${listening ? "bg-rose-400 text-stone-950" : "border border-white/10 bg-white/5 text-stone-100"}`}
+            >
               {listening ? "마이크 중지" : "음성 입력 베타"}
             </button>
           ) : (
-            <div className="rounded-2xl border border-dashed border-white/10 px-4 py-3 text-sm text-stone-400">음성 입력은 지원되는 Chrome 또는 Edge 브라우저에서만 사용할 수 있어요.</div>
+            <div className="rounded-2xl border border-dashed border-white/10 px-4 py-3 text-sm text-stone-400">이 브라우저에서는 음성 입력이 지원되지 않습니다. 텍스트로 입력해 주세요.</div>
           )}
           <button onClick={() => handleSubmit(supported && listening ? "voice" : "text")} disabled={busy || !answer.trim()} className="flex-1 rounded-2xl bg-orange-400 px-4 py-3 font-semibold text-stone-950 disabled:opacity-50">
             답변 제출
           </button>
         </div>
+        {submitError && (
+          <div className="mt-3 rounded-2xl border border-rose-400/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-200">
+            {submitError}
+          </div>
+        )}
       </section>
 
       {feedback && (

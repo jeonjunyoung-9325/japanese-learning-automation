@@ -34,12 +34,12 @@ export const demoLessons: Lesson[] = [
     estimatedMinutes: 4,
     expressions: [
       { id: "e1", japanese: "会社員です", reading: "かいしゃいんです", meaningKo: "회사원입니다", notesKo: "직업 소개" },
-      { id: "e2", japanese: "ソウルで働いています", reading: "そうるではたらいています", meaningKo: "서울에서 일하고 있어요", notesKo: "근무지 소개" },
+      { id: "e2", japanese: "ソウルで働いています", reading: "ソウルではたらいています", meaningKo: "서울에서 일하고 있어요", notesKo: "근무지 소개" },
       { id: "e3", japanese: "よろしくお願いします", reading: "よろしくおねがいします", meaningKo: "잘 부탁드립니다", notesKo: "마무리 인사" },
     ],
     miniDialogue: [
       { speaker: "staff", japanese: "お仕事は何ですか。", reading: "おしごとはなんですか。", meaningKo: "무슨 일을 하세요?" },
-      { speaker: "learner", japanese: "会社員です。ソウルで働いています。", reading: "かいしゃいんです。そうるではたらいています。", meaningKo: "회사원이에요. 서울에서 일하고 있어요." },
+      { speaker: "learner", japanese: "会社員です。ソウルで働いています。", reading: "かいしゃいんです。ソウルではたらいています。", meaningKo: "회사원이에요. 서울에서 일하고 있어요." },
     ],
     prompts: [
       { id: "p1", situation: "직업 소개", instructionKo: "회사원이라고 말해 보세요.", targetAnswer: "会社員です。", hints: ["会社員です"], keyExpressionIds: ["e1"] },
@@ -56,13 +56,13 @@ export const demoLessons: Lesson[] = [
     explanationKo: "카페에서 가장 자주 쓰는 주문 패턴을 익힙니다.",
     estimatedMinutes: 4,
     expressions: [
-      { id: "e1", japanese: "アイスコーヒーをお願いします", reading: "あいすこーひーをおねがいします", meaningKo: "아이스커피 주세요", notesKo: "주문 기본형" },
+      { id: "e1", japanese: "アイスコーヒーをお願いします", reading: "アイスコーヒーをおねがいします", meaningKo: "아이스커피 주세요", notesKo: "주문 기본형" },
       { id: "e2", japanese: "ひとつください", reading: "ひとつください", meaningKo: "하나 주세요", notesKo: "수량 표현" },
       { id: "e3", japanese: "店内で", reading: "てんないで", meaningKo: "매장에서요", notesKo: "먹고 갈 때" },
     ],
     miniDialogue: [
       { speaker: "staff", japanese: "ご注文は？", reading: "ごちゅうもんは？", meaningKo: "주문하시겠어요?" },
-      { speaker: "learner", japanese: "アイスコーヒーをお願いします。店内で。", reading: "あいすこーひーをおねがいします。てんないで。", meaningKo: "아이스커피 주세요. 매장에서요." },
+      { speaker: "learner", japanese: "アイスコーヒーをお願いします。店内で。", reading: "アイスコーヒーをおねがいします。てんないで。", meaningKo: "아이스커피 주세요. 매장에서요." },
     ],
     prompts: [
       { id: "p1", situation: "음료 주문", instructionKo: "아이스커피 한 잔을 주문해 보세요.", targetAnswer: "アイスコーヒーをお願いします。", hints: ["アイスコーヒー", "お願いします"], keyExpressionIds: ["e1"] },
@@ -103,12 +103,12 @@ export const demoLessons: Lesson[] = [
     estimatedMinutes: 4,
     expressions: [
       { id: "e1", japanese: "袋は大丈夫です", reading: "ふくろはだいじょうぶです", meaningKo: "봉투는 괜찮아요", notesKo: "거절 표현" },
-      { id: "e2", japanese: "カードで払います", reading: "かーどではらいます", meaningKo: "카드로 계산할게요", notesKo: "결제 수단" },
+      { id: "e2", japanese: "カードで払います", reading: "カードではらいます", meaningKo: "카드로 계산할게요", notesKo: "결제 수단" },
       { id: "e3", japanese: "温めてください", reading: "あたためてください", meaningKo: "데워 주세요", notesKo: "음식 요청" },
     ],
     miniDialogue: [
       { speaker: "staff", japanese: "袋はご利用ですか。", reading: "ふくろはごりようですか。", meaningKo: "봉투 필요하세요?" },
-      { speaker: "learner", japanese: "袋は大丈夫です。カードで払います。", reading: "ふくろはだいじょうぶです。かーどではらいます。", meaningKo: "봉투는 괜찮아요. 카드로 계산할게요." },
+      { speaker: "learner", japanese: "袋は大丈夫です。カードで払います。", reading: "ふくろはだいじょうぶです。カードではらいます。", meaningKo: "봉투는 괜찮아요. 카드로 계산할게요." },
     ],
     prompts: [
       { id: "p1", situation: "봉투 거절", instructionKo: "봉투는 괜찮다고 말해 보세요.", targetAnswer: "袋は大丈夫です。", hints: ["袋は大丈夫です"], keyExpressionIds: ["e1"] },
@@ -311,11 +311,11 @@ export const demoLessons: Lesson[] = [
     expressions: [
       { id: "e1", japanese: "これをお願いします", reading: "これをおねがいします", meaningKo: "이걸로 할게요", notesKo: "구매 확정" },
       { id: "e2", japanese: "免税できますか", reading: "めんぜいできますか", meaningKo: "면세 되나요?", notesKo: "면세 질문" },
-      { id: "e3", japanese: "レシートをください", reading: "れしーとをください", meaningKo: "영수증 주세요", notesKo: "영수증 요청" },
+      { id: "e3", japanese: "レシートをください", reading: "レシートをください", meaningKo: "영수증 주세요", notesKo: "영수증 요청" },
     ],
     miniDialogue: [
       { speaker: "learner", japanese: "これをお願いします。免税できますか。", reading: "これをおねがいします。めんぜいできますか。", meaningKo: "이걸로 할게요. 면세 되나요?" },
-      { speaker: "staff", japanese: "パスポートをお願いします。", reading: "ぱすぽーとをおねがいします。", meaningKo: "여권 부탁드립니다." },
+      { speaker: "staff", japanese: "パスポートをお願いします。", reading: "パスポートをおねがいします。", meaningKo: "여권 부탁드립니다." },
     ],
     prompts: [
       { id: "p1", situation: "구매 확정", instructionKo: "이걸로 하겠다고 말해 보세요.", targetAnswer: "これをお願いします。", hints: ["これをお願いします"], keyExpressionIds: ["e1"] },
@@ -495,7 +495,7 @@ export const demoLessons: Lesson[] = [
     expressions: [
       { id: "e1", japanese: "荷物を預けたいです", reading: "にもつをあずけたいです", meaningKo: "짐을 부치고 싶어요", notesKo: "수하물 요청" },
       { id: "e2", japanese: "搭乗は何時ですか", reading: "とうじょうはなんじですか", meaningKo: "탑승은 몇 시예요?", notesKo: "시간 질문" },
-      { id: "e3", japanese: "ゲートはどこですか", reading: "げーとはどこですか", meaningKo: "게이트는 어디예요?", notesKo: "위치 질문" },
+      { id: "e3", japanese: "ゲートはどこですか", reading: "ゲートはどこですか", meaningKo: "게이트는 어디예요?", notesKo: "위치 질문" },
     ],
     miniDialogue: [
       { speaker: "learner", japanese: "荷物を預けたいです。搭乗は何時ですか。", reading: "にもつをあずけたいです。とうじょうはなんじですか。", meaningKo: "짐을 부치고 싶어요. 탑승은 몇 시예요?" },

@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 const items = [
   { href: "/dashboard", label: "홈" },
   { href: "/lessons", label: "레슨" },
+  { href: "/vocabulary", label: "단어장" },
   { href: "/review", label: "복습" },
   { href: "/profile", label: "프로필" },
 ];
@@ -16,7 +17,7 @@ export function BottomNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 mx-auto mb-4 w-[calc(100%-2rem)] max-w-md rounded-[28px] border border-white/10 bg-stone-950/90 p-2 shadow-2xl shadow-black/40 backdrop-blur">
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-5 gap-2">
         {items.map((item) => {
           const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
           return (

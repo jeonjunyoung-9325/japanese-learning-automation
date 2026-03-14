@@ -19,6 +19,7 @@ export function ProfileScreen() {
 
       <div className="rounded-[28px] border border-white/10 bg-white/5 p-5">
         <div className="grid gap-3 text-sm text-stone-300">
+          <Row label="온보딩" value={profile.onboardingCompleted ? "완료" : "미완료"} />
           <Row label="모드" value={isGuestMode ? "게스트 체험 모드" : "Supabase 로그인"} />
           <Row label="이메일" value={profile.email ?? "게스트 전용"} />
           <Row label="레벨" value={profile.japaneseLevel === "complete-beginner" ? "완전 초급" : profile.japaneseLevel === "beginner" ? "초급" : profile.japaneseLevel === "lower-intermediate" ? "초중급" : "아직 설정하지 않음"} />

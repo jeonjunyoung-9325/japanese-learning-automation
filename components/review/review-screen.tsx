@@ -25,7 +25,7 @@ export function ReviewScreen() {
             <p className="mt-2 text-sm text-stone-300">{item.meaningKo}</p>
             <p className="mt-2 text-xs text-stone-500">최근 점수: {item.lastScore}</p>
             <Link
-              href={`/lessons/${item.lessonId}`}
+              href={`/lessons/${item.lessonId}?prompt=${item.promptId}`}
               className="mt-4 inline-flex w-fit rounded-2xl bg-orange-400 px-5 py-3 font-semibold text-stone-950 shadow-lg shadow-orange-950/20"
             >
               레슨 다시 열기

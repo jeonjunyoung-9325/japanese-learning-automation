@@ -20,6 +20,7 @@ import type {
   ReviewItem,
   Streak,
   UserProfile,
+  VocabularyItem,
 } from "@/lib/types";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { getSupabaseConfig } from "@/lib/supabase/config";
@@ -41,6 +42,7 @@ type AppContextValue = {
   reviewItems: ReviewItem[];
   dailyProgress: DailyProgress[];
   streak: Streak | null;
+  vocabularyItems: VocabularyItem[];
   signIn: (email: string, password: string) => Promise<{ error?: string; message?: string }>;
   signUp: (email: string, password: string) => Promise<{ error?: string; message?: string }>;
   continueAsGuest: () => Promise<void>;
@@ -193,7 +195,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       ]);
 
     const now = new Date().toISOString();
-    setProfile(
+    const resolvedProfile =
       profileRow
         ? {
             id: profileRow.id,
@@ -212,8 +214,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
             onboardingCompleted: false,
             createdAt: now,
             updatedAt: now,
-          },
-    );
+          };
+
+    setProfile(resolvedProfile);
+
+    if (!profileRow) {
+      await supabase.from("profiles").upsert({
+        id: resolvedProfile.id,
+        email: resolvedProfile.email,
+        display_name: resolvedProfile.displayName,
+        onboarding_completed: resolvedProfile.onboardingCompleted,
+        created_at: resolvedProfile.createdAt,
+        updated_at: resolvedProfile.updatedAt,
+      });
+    }
+
     setAttempts((attemptsRows ?? []).map((row) => ({
       id: row.id,
       lessonId: row.lesson_id,
@@ -230,6 +245,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       expression: row.expression,
       meaningKo: row.meaning_ko,
       lessonId: row.lesson_id,
+      promptId: row.prompt_id ?? "p1",
       state: row.state,
       lastScore: row.last_score,
       updatedAt: row.updated_at,
@@ -299,6 +315,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
 
     window.localStorage.removeItem(LOCAL_GUEST_KEY);
+    window.localStorage.removeItem(LOCAL_STORAGE_KEY);
     setIsGuestMode(false);
     setSession(null);
     setProfile(null);
@@ -370,6 +387,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }),
     });
 
+    if (!response.ok) {
+      throw new Error(`피드백 생성 중 오류가 발생했습니다. (${response.status})`);
+    }
+
     const feedback = (await response.json()) as PracticeFeedback;
     const attempt: PracticeAttempt = {
       id: createId("attempt"),
@@ -389,6 +410,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         expression: expression.japanese,
         meaningKo: expression.meaningKo,
         lessonId: payload.lesson.id,
+        promptId: payload.prompt.id,
       }));
     const nextReviewItems = updateReviewItems(
       reviewItems,
@@ -441,6 +463,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
             expression: item.expression,
             meaning_ko: item.meaningKo,
             lesson_id: item.lessonId,
+            prompt_id: item.promptId,
             state: item.state,
             last_score: item.lastScore,
             updated_at: item.updatedAt,
@@ -483,6 +506,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       reviewItems,
       dailyProgress,
       streak,
+      vocabularyItems: buildVocabularyItems(demoLessons, attempts, reviewItems),
       signIn,
       signUp,
       continueAsGuest,
@@ -494,6 +518,34 @@ export function AppProvider({ children }: { children: ReactNode }) {
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+}
+
+function buildVocabularyItems(
+  lessons: Lesson[],
+  attempts: PracticeAttempt[],
+  reviewItems: ReviewItem[],
+): VocabularyItem[] {
+  const attemptedLessonIds = new Set(attempts.map((attempt) => attempt.lessonId));
+  const reviewExpressionSet = new Set(reviewItems.map((item) => item.expression));
+
+  return lessons
+    .filter((lesson) => attemptedLessonIds.has(lesson.id) || reviewItems.some((item) => item.lessonId === lesson.id))
+    .flatMap((lesson) =>
+      lesson.expressions.map<VocabularyItem>((expression) => ({
+        id: `${lesson.id}-${expression.id}`,
+        lessonId: lesson.id,
+        expressionId: expression.id,
+        japanese: expression.japanese,
+        reading: expression.reading,
+        meaningKo: expression.meaningKo,
+        notesKo: expression.notesKo,
+        category: lesson.category,
+        lessonTitle: lesson.title,
+        mastered: !reviewExpressionSet.has(expression.japanese),
+        source: reviewExpressionSet.has(expression.japanese) ? "review" : "lesson",
+      })),
+    )
+    .sort((left, right) => Number(left.mastered) - Number(right.mastered) || left.lessonId.localeCompare(right.lessonId));
 }
 
 export function useApp() {
