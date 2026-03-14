@@ -15,16 +15,26 @@ export function AuthFlow() {
   const [level, setLevel] = useState<"complete-beginner" | "beginner" | "lower-intermediate">("complete-beginner");
   const [goal, setGoal] = useState<"travel" | "daily-conversation" | "work" | "jlpt-support">("travel");
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
 
   async function handleAuth() {
     setBusy(true);
     setError("");
+    setNotice("");
+
+    if (!email.trim() || !password.trim()) {
+      setError("이메일과 비밀번호를 모두 입력해 주세요.");
+      setBusy(false);
+      return;
+    }
 
     const result = mode === "login" ? await signIn(email, password) : await signUp(email, password);
 
     if (result.error) {
       setError(result.error);
+    } else if (result.message) {
+      setNotice(result.message);
     }
 
     setBusy(false);
@@ -32,6 +42,8 @@ export function AuthFlow() {
 
   async function handleGuest() {
     setBusy(true);
+    setError("");
+    setNotice("");
     await continueAsGuest();
     setBusy(false);
   }
@@ -148,6 +160,7 @@ export function AuthFlow() {
           </p>
         )}
         {isGuestMode && <p className="mt-3 text-sm text-emerald-300">이 브라우저에서 게스트 모드를 사용할 수 있어요.</p>}
+        {notice && <p className="mt-3 text-sm text-emerald-300">{notice}</p>}
         {error && <p className="mt-3 text-sm text-rose-300">{error}</p>}
       </section>
     </main>

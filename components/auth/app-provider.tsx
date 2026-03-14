@@ -41,8 +41,8 @@ type AppContextValue = {
   reviewItems: ReviewItem[];
   dailyProgress: DailyProgress[];
   streak: Streak | null;
-  signIn: (email: string, password: string) => Promise<{ error?: string }>;
-  signUp: (email: string, password: string) => Promise<{ error?: string }>;
+  signIn: (email: string, password: string) => Promise<{ error?: string; message?: string }>;
+  signUp: (email: string, password: string) => Promise<{ error?: string; message?: string }>;
   continueAsGuest: () => Promise<void>;
   signOut: () => Promise<void>;
   saveOnboarding: (payload: {
@@ -261,7 +261,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
 
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    return error ? { error: error.message } : {};
+    return error ? { error: error.message } : { message: "로그인 중입니다..." };
   }
 
   async function signUp(email: string, password: string) {
@@ -269,8 +269,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
       return { error: "아직 Supabase가 설정되지 않았어요. 게스트 모드를 사용하거나 환경 변수를 먼저 추가해 주세요." };
     }
 
-    const { error } = await supabase.auth.signUp({ email, password });
-    return error ? { error: error.message } : {};
+    const { data, error } = await supabase.auth.signUp({ email, password });
+
+    if (error) {
+      return { error: error.message };
+    }
+
+    if (data.session) {
+      return { message: "회원가입이 완료되었습니다. 바로 시작해 보세요." };
+    }
+
+    return { message: "회원가입이 완료되었습니다. 이메일 받은편지함에서 인증 후 로그인해 주세요." };
   }
 
   async function continueAsGuest() {
