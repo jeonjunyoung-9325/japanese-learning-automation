@@ -24,6 +24,29 @@ const difficultyOrder: Record<Difficulty, number> = {
   "lower-intermediate": 2,
 };
 
+function shouldShowByCollection(params: {
+  collectionFilter: CollectionFilter;
+  isFavorite: boolean;
+  isMastered: boolean;
+  isToday: boolean;
+}) {
+  const { collectionFilter, isFavorite, isMastered, isToday } = params;
+
+  if (collectionFilter === "mastered") {
+    return isMastered;
+  }
+
+  if (collectionFilter === "favorite") {
+    return isFavorite;
+  }
+
+  if (collectionFilter === "today") {
+    return isToday && !isMastered;
+  }
+
+  return !isMastered;
+}
+
 export function VocabularyScreen() {
   const {
     vocabularyWords,
@@ -64,14 +87,14 @@ export function VocabularyScreen() {
           const isFavorite = studyPreferences.favoriteWordIds.includes(item.id);
           const isMastered = studyPreferences.masteredWordIds.includes(item.id);
           const isToday = studyPreferences.todayWordIds.includes(item.id);
-          const matchesCollection =
-            collectionFilter === "all" ||
-            (collectionFilter === "today" && isToday) ||
-            (collectionFilter === "favorite" && isFavorite) ||
-            (collectionFilter === "mastered" && isMastered);
-          const visibleByMasteredState = collectionFilter === "mastered" ? isMastered : !isMastered;
+          const matchesCollection = shouldShowByCollection({
+            collectionFilter,
+            isFavorite,
+            isMastered,
+            isToday,
+          });
 
-          return matchesDifficulty && matchesQuery && matchesCollection && visibleByMasteredState;
+          return matchesDifficulty && matchesQuery && matchesCollection;
         })
         .sort((left, right) => {
           const difficultyDiff = difficultyOrder[left.difficulty] - difficultyOrder[right.difficulty];
@@ -94,14 +117,14 @@ export function VocabularyScreen() {
           const isFavorite = studyPreferences.favoriteSentenceIds.includes(item.id);
           const isMastered = studyPreferences.masteredSentenceIds.includes(item.id);
           const isToday = studyPreferences.todaySentenceIds.includes(item.id);
-          const matchesCollection =
-            collectionFilter === "all" ||
-            (collectionFilter === "today" && isToday) ||
-            (collectionFilter === "favorite" && isFavorite) ||
-            (collectionFilter === "mastered" && isMastered);
-          const visibleByMasteredState = collectionFilter === "mastered" ? isMastered : !isMastered;
+          const matchesCollection = shouldShowByCollection({
+            collectionFilter,
+            isFavorite,
+            isMastered,
+            isToday,
+          });
 
-          return matchesDifficulty && matchesQuery && matchesCollection && visibleByMasteredState;
+          return matchesDifficulty && matchesQuery && matchesCollection;
         })
         .sort((left, right) => {
           const difficultyDiff = difficultyOrder[left.difficulty] - difficultyOrder[right.difficulty];
