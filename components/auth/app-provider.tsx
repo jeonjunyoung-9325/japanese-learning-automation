@@ -10,6 +10,7 @@ import {
 } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { demoLessons } from "@/lib/demo/lessons";
+import { coreStudySentences, coreVocabularyWords } from "@/lib/demo/study-bank";
 import type {
   DailyProgress,
   InputMode,
@@ -18,9 +19,10 @@ import type {
   PracticeAttempt,
   PracticeFeedback,
   ReviewItem,
+  StudySentence,
   Streak,
   UserProfile,
-  VocabularyItem,
+  VocabularyWord,
 } from "@/lib/types";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { getSupabaseConfig } from "@/lib/supabase/config";
@@ -42,7 +44,8 @@ type AppContextValue = {
   reviewItems: ReviewItem[];
   dailyProgress: DailyProgress[];
   streak: Streak | null;
-  vocabularyItems: VocabularyItem[];
+  vocabularyWords: VocabularyWord[];
+  studySentences: StudySentence[];
   signIn: (email: string, password: string) => Promise<{ error?: string; message?: string }>;
   signUp: (email: string, password: string) => Promise<{ error?: string; message?: string }>;
   continueAsGuest: () => Promise<void>;
@@ -506,7 +509,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       reviewItems,
       dailyProgress,
       streak,
-      vocabularyItems: buildVocabularyItems(demoLessons, attempts, reviewItems),
+      vocabularyWords: coreVocabularyWords,
+      studySentences: coreStudySentences,
       signIn,
       signUp,
       continueAsGuest,
@@ -518,34 +522,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
-}
-
-function buildVocabularyItems(
-  lessons: Lesson[],
-  attempts: PracticeAttempt[],
-  reviewItems: ReviewItem[],
-): VocabularyItem[] {
-  const attemptedLessonIds = new Set(attempts.map((attempt) => attempt.lessonId));
-  const reviewExpressionSet = new Set(reviewItems.map((item) => item.expression));
-
-  return lessons
-    .filter((lesson) => attemptedLessonIds.has(lesson.id) || reviewItems.some((item) => item.lessonId === lesson.id))
-    .flatMap((lesson) =>
-      lesson.expressions.map<VocabularyItem>((expression) => ({
-        id: `${lesson.id}-${expression.id}`,
-        lessonId: lesson.id,
-        expressionId: expression.id,
-        japanese: expression.japanese,
-        reading: expression.reading,
-        meaningKo: expression.meaningKo,
-        notesKo: expression.notesKo,
-        category: lesson.category,
-        lessonTitle: lesson.title,
-        mastered: !reviewExpressionSet.has(expression.japanese),
-        source: reviewExpressionSet.has(expression.japanese) ? "review" : "lesson",
-      })),
-    )
-    .sort((left, right) => Number(left.mastered) - Number(right.mastered) || left.lessonId.localeCompare(right.lessonId));
 }
 
 export function useApp() {

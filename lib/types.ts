@@ -92,18 +92,26 @@ export type ReviewItem = {
   updatedAt: string;
 };
 
-export type VocabularyItem = {
+export type VocabularyWord = {
   id: string;
-  lessonId: string;
-  expressionId: string;
   japanese: string;
   reading: string;
   meaningKo: string;
-  notesKo: string;
+  noteKo: string;
   category: string;
-  lessonTitle: string;
-  mastered: boolean;
-  source: "lesson" | "review";
+  difficulty: Difficulty;
+  jlptLevel: "N5";
+};
+
+export type StudySentence = {
+  id: string;
+  japanese: string;
+  reading: string;
+  meaningKo: string;
+  patternKo: string;
+  category: string;
+  difficulty: Difficulty;
+  jlptLevel: "N5";
 };
 
 export type DailyProgress = {

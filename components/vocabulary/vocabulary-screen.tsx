@@ -1,88 +1,169 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useApp } from "@/components/auth/app-provider";
-import { getCategoryLabel, getLessonTitleLabel } from "@/lib/utils/labels";
+import { getDifficultyLabel } from "@/lib/utils/labels";
+import type { Difficulty } from "@/lib/types";
+
+const tabs = [
+  { id: "words", label: "단어" },
+  { id: "sentences", label: "문장" },
+] as const;
+
+const difficulties: Array<{ id: "all" | Difficulty; label: string }> = [
+  { id: "all", label: "전체" },
+  { id: "complete-beginner", label: "완전 초급" },
+  { id: "beginner", label: "초급" },
+  { id: "lower-intermediate", label: "초중급" },
+];
 
 export function VocabularyScreen() {
-  const { vocabularyItems, lessons } = useApp();
-  const [filter, setFilter] = useState<"all" | "weak" | "mastered">("all");
+  const { vocabularyWords, studySentences } = useApp();
+  const [tab, setTab] = useState<(typeof tabs)[number]["id"]>("words");
+  const [difficulty, setDifficulty] = useState<"all" | Difficulty>("all");
+  const [query, setQuery] = useState("");
 
-  const visibleItems = vocabularyItems.filter((item) => {
-    if (filter === "weak") {
-      return !item.mastered;
-    }
+  const normalizedQuery = query.trim().toLowerCase();
 
-    if (filter === "mastered") {
-      return item.mastered;
-    }
+  const visibleWords = useMemo(
+    () =>
+      vocabularyWords.filter((item) => {
+        const matchesDifficulty = difficulty === "all" || item.difficulty === difficulty;
+        const haystack = `${item.japanese} ${item.reading} ${item.meaningKo} ${item.category}`.toLowerCase();
+        const matchesQuery = !normalizedQuery || haystack.includes(normalizedQuery);
+        return matchesDifficulty && matchesQuery;
+      }),
+    [difficulty, normalizedQuery, vocabularyWords],
+  );
 
-    return true;
-  });
+  const visibleSentences = useMemo(
+    () =>
+      studySentences.filter((item) => {
+        const matchesDifficulty = difficulty === "all" || item.difficulty === difficulty;
+        const haystack = `${item.japanese} ${item.reading} ${item.meaningKo} ${item.category} ${item.patternKo}`.toLowerCase();
+        const matchesQuery = !normalizedQuery || haystack.includes(normalizedQuery);
+        return matchesDifficulty && matchesQuery;
+      }),
+    [difficulty, normalizedQuery, studySentences],
+  );
+
+  const visibleCount = tab === "words" ? visibleWords.length : visibleSentences.length;
 
   return (
     <div className="grid gap-4">
       <div>
-        <p className="text-sm uppercase tracking-[0.2em] text-orange-300">개인 단어장</p>
-        <h1 className="mt-2 text-3xl font-semibold text-white">연습한 표현을 다시 모아보기</h1>
-        <p className="mt-2 text-sm text-stone-300">연습한 레슨의 핵심 표현과 취약 표현을 한곳에서 볼 수 있습니다.</p>
+        <p className="text-sm uppercase tracking-[0.2em] text-orange-300">N5 학습 아카이브</p>
+        <h1 className="mt-2 text-3xl font-semibold text-white">단어와 문장을 나눠서 익혀요</h1>
+        <p className="mt-2 text-sm text-stone-300">
+          단어는 단어만 따로, 문장은 난이도별 패턴으로 따로 볼 수 있게 정리했습니다.
+        </p>
       </div>
 
-      <div className="flex gap-2">
-        <FilterButton active={filter === "all"} onClick={() => setFilter("all")} label="전체" />
-        <FilterButton active={filter === "weak"} onClick={() => setFilter("weak")} label="취약 표현" />
-        <FilterButton active={filter === "mastered"} onClick={() => setFilter("mastered")} label="익숙한 표현" />
-      </div>
+      <section className="rounded-[28px] border border-white/10 bg-white/5 p-5">
+        <div className="grid gap-4">
+          <div className="grid grid-cols-2 gap-2 rounded-[24px] bg-black/20 p-1">
+            {tabs.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => setTab(item.id)}
+                className={`rounded-[20px] px-4 py-3 text-sm ${tab === item.id ? "bg-orange-400 font-semibold text-stone-950" : "text-stone-300"}`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
 
-      {visibleItems.length > 0 ? (
-        visibleItems.map((item) => {
-          const lesson = lessons.find((candidate) => candidate.id === item.lessonId);
+          <div className="grid gap-3">
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={tab === "words" ? "단어, 읽는 법, 뜻으로 검색" : "문장, 뜻, 패턴으로 검색"}
+              className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm outline-none placeholder:text-stone-500"
+            />
+            <div className="flex flex-wrap gap-2">
+              {difficulties.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setDifficulty(item.id)}
+                  className={`rounded-full px-4 py-2 text-sm ${difficulty === item.id ? "bg-orange-400 font-semibold text-stone-950" : "border border-white/10 bg-white/5 text-stone-200"}`}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
 
-          return (
+          <div className="grid grid-cols-3 gap-3">
+            <StatCard label="단어 수" value={`${vocabularyWords.length}개`} />
+            <StatCard label="문장 수" value={`${studySentences.length}개`} />
+            <StatCard label="현재 보기" value={`${visibleCount}개`} />
+          </div>
+        </div>
+      </section>
+
+      {tab === "words" ? (
+        visibleWords.length > 0 ? (
+          visibleWords.map((item) => (
             <div key={item.id} className="rounded-[28px] border border-white/10 bg-white/5 p-5">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <h2 className="text-2xl font-semibold text-white">{item.japanese}</h2>
                   <p className="mt-1 text-sm text-stone-400">{item.reading}</p>
                 </div>
-                <span className={`rounded-full px-3 py-1 text-xs font-medium ${item.mastered ? "bg-emerald-400/15 text-emerald-200" : "bg-orange-400/15 text-orange-200"}`}>
-                  {item.mastered ? "익숙함" : "복습 필요"}
+                <span className="rounded-full bg-orange-400/15 px-3 py-1 text-xs font-medium text-orange-200">
+                  {getDifficultyLabel(item.difficulty)}
                 </span>
               </div>
               <p className="mt-3 text-base text-stone-100">{item.meaningKo}</p>
-              <p className="mt-2 text-sm text-stone-300">{item.notesKo}</p>
+              <p className="mt-2 text-sm text-stone-300">{item.noteKo}</p>
               <div className="mt-4 flex flex-wrap gap-2 text-xs text-stone-400">
-                <span className="rounded-full bg-black/20 px-3 py-1">{getCategoryLabel(item.category)}</span>
-                <span className="rounded-full bg-black/20 px-3 py-1">{lesson ? getLessonTitleLabel(lesson) : item.lessonTitle}</span>
-                <span className="rounded-full bg-black/20 px-3 py-1">{item.source === "review" ? "복습에서 저장" : "레슨에서 학습"}</span>
+                <span className="rounded-full bg-black/20 px-3 py-1">{item.category}</span>
+                <span className="rounded-full bg-black/20 px-3 py-1">{item.jlptLevel}</span>
               </div>
             </div>
-          );
-        })
+          ))
+        ) : (
+          <EmptyPanel text="조건에 맞는 단어가 아직 없어요. 검색어나 난이도를 바꿔 보세요." />
+        )
+      ) : visibleSentences.length > 0 ? (
+        visibleSentences.map((item) => (
+          <div key={item.id} className="rounded-[28px] border border-white/10 bg-white/5 p-5">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className="text-2xl font-semibold text-white">{item.japanese}</h2>
+                <p className="mt-1 text-sm text-stone-400">{item.reading}</p>
+              </div>
+              <span className="rounded-full bg-orange-400/15 px-3 py-1 text-xs font-medium text-orange-200">
+                {getDifficultyLabel(item.difficulty)}
+              </span>
+            </div>
+            <p className="mt-3 text-base text-stone-100">{item.meaningKo}</p>
+            <div className="mt-3 rounded-2xl border border-white/10 bg-black/20 p-3">
+              <p className="text-xs uppercase tracking-[0.16em] text-stone-500">패턴 포인트</p>
+              <p className="mt-2 text-sm text-stone-200">{item.patternKo}</p>
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2 text-xs text-stone-400">
+              <span className="rounded-full bg-black/20 px-3 py-1">{item.category}</span>
+              <span className="rounded-full bg-black/20 px-3 py-1">{item.jlptLevel}</span>
+            </div>
+          </div>
+        ))
       ) : (
-        <div className="rounded-[28px] border border-dashed border-white/10 p-6 text-sm text-stone-400">
-          아직 단어장에 표시할 표현이 없어요. 레슨을 연습하면 핵심 표현이 자동으로 모입니다.
-        </div>
+        <EmptyPanel text="조건에 맞는 문장이 아직 없어요. 검색어나 난이도를 바꿔 보세요." />
       )}
     </div>
   );
 }
 
-function FilterButton({
-  active,
-  onClick,
-  label,
-}: {
-  active: boolean;
-  onClick: () => void;
-  label: string;
-}) {
+function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <button
-      onClick={onClick}
-      className={`rounded-full px-4 py-2 text-sm ${active ? "bg-orange-400 font-semibold text-stone-950" : "border border-white/10 bg-white/5 text-stone-200"}`}
-    >
-      {label}
-    </button>
+    <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+      <p className="text-xs uppercase tracking-[0.16em] text-stone-500">{label}</p>
+      <p className="mt-2 text-lg font-semibold text-white">{value}</p>
+    </div>
   );
+}
+
+function EmptyPanel({ text }: { text: string }) {
+  return <div className="rounded-[28px] border border-dashed border-white/10 p-6 text-sm text-stone-400">{text}</div>;
 }
