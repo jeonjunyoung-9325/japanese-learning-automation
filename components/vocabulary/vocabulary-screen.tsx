@@ -323,20 +323,27 @@ function SentenceListCard({
   onToggleToday: () => void;
 }) {
   const [showMeaning, setShowMeaning] = useState(false);
+  const [showFurigana, setShowFurigana] = useState(false);
 
   return (
     <div className="rounded-[28px] border border-white/10 bg-white/5 p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className="text-2xl font-semibold text-white">{item.japanese}</h2>
-          <p className="mt-1 text-sm text-stone-400">{item.reading}</p>
+          {showFurigana && <p className="mt-1 text-sm text-orange-100/80">{item.reading}</p>}
         </div>
         <span className="rounded-full bg-orange-400/15 px-3 py-1 text-xs font-medium text-orange-200">
           {getDifficultyLabel(item.difficulty)}
         </span>
       </div>
 
-      <div className="mt-4">
+      <div className="mt-4 flex flex-wrap gap-2">
+        <button
+          onClick={() => setShowFurigana((current) => !current)}
+          className="rounded-2xl border border-white/10 bg-black/20 px-4 py-2 text-sm text-stone-100"
+        >
+          {showFurigana ? "후리가나 숨기기" : "후리가나 보기"}
+        </button>
         <button
           onClick={() => setShowMeaning((current) => !current)}
           className="rounded-2xl border border-white/10 bg-black/20 px-4 py-2 text-sm text-stone-100"
