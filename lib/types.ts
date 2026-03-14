@@ -20,6 +20,7 @@ export type LessonPrompt = {
   situation: string;
   instructionKo: string;
   targetAnswer: string;
+  targetReading: string;
   hints: string[];
   keyExpressionIds: string[];
 };

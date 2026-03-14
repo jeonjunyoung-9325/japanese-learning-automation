@@ -19,9 +19,9 @@ export const demoLessons: Lesson[] = [
       { speaker: "learner", japanese: "はじめまして。ミナです。韓国から来ました。よろしくお願いします。", reading: "はじめまして。みなです。かんこくからきました。よろしくおねがいします。", meaningKo: "처음 뵙겠습니다. 미나입니다. 한국에서 왔어요. 잘 부탁드립니다." },
     ],
     prompts: [
-      { id: "p1", situation: "처음 만나서 이름 말하기", instructionKo: "이름과 출신지를 포함해 짧게 인사해 보세요.", targetAnswer: "はじめまして。ミナです。韓国から来ました。よろしくお願いします。", hints: ["はじめまして", "です", "韓国から来ました"], keyExpressionIds: ["e1", "e2", "e3"] },
-      { id: "p2", situation: "좋아하는 공부 말하기", instructionKo: "일본어를 공부하고 있다고 덧붙여 보세요.", targetAnswer: "はじめまして。ミナです。韓国から来ました。日本語を勉強しています。よろしくお願いします。", hints: ["日本語を勉強しています"], keyExpressionIds: ["e1", "e2", "e3"] },
-      { id: "p3", situation: "반갑다고 한마디 더하기", instructionKo: "만나서 반갑다고 덧붙여 보세요.", targetAnswer: "はじめまして。ミナです。お会いできてうれしいです。よろしくお願いします。", hints: ["お会いできてうれしいです"], keyExpressionIds: ["e1", "e3"] },
+      { id: "p1", situation: "처음 만나서 이름 말하기", instructionKo: "이름과 출신지를 포함해 짧게 인사해 보세요.", targetAnswer: "はじめまして。ミナです。韓国から来ました。よろしくお願いします。", targetReading: "はじめまして。みなです。かんこくからきました。よろしくおねがいします。", hints: ["はじめまして", "です", "韓国から来ました"], keyExpressionIds: ["e1", "e2", "e3"] },
+      { id: "p2", situation: "좋아하는 공부 말하기", instructionKo: "일본어를 공부하고 있다고 덧붙여 보세요.", targetAnswer: "はじめまして。ミナです。韓国から来ました。日本語を勉強しています。よろしくお願いします。", targetReading: "はじめまして。みなです。かんこくからきました。にほんごをべんきょうしています。よろしくおねがいします。", hints: ["日本語を勉強しています"], keyExpressionIds: ["e1", "e2", "e3"] },
+      { id: "p3", situation: "반갑다고 한마디 더하기", instructionKo: "만나서 반갑다고 덧붙여 보세요.", targetAnswer: "はじめまして。ミナです。お会いできてうれしいです。よろしくお願いします。", targetReading: "はじめまして。みなです。おあいできてうれしいです。よろしくおねがいします。", hints: ["お会いできてうれしいです"], keyExpressionIds: ["e1", "e3"] },
     ],
   },
   {
@@ -42,9 +42,9 @@ export const demoLessons: Lesson[] = [
       { speaker: "learner", japanese: "会社員です。ソウルで働いています。", reading: "かいしゃいんです。ソウルではたらいています。", meaningKo: "회사원이에요. 서울에서 일하고 있어요." },
     ],
     prompts: [
-      { id: "p1", situation: "직업 소개", instructionKo: "회사원이라고 말해 보세요.", targetAnswer: "会社員です。", hints: ["会社員です"], keyExpressionIds: ["e1"] },
-      { id: "p2", situation: "근무지 포함", instructionKo: "서울에서 일한다고 덧붙여 보세요.", targetAnswer: "会社員です。ソウルで働いています。", hints: ["ソウルで働いています"], keyExpressionIds: ["e1", "e2"] },
-      { id: "p3", situation: "정중하게 마무리", instructionKo: "짧은 자기소개를 정중하게 마무리해 보세요.", targetAnswer: "会社員です。ソウルで働いています。よろしくお願いします。", hints: ["よろしくお願いします"], keyExpressionIds: ["e1", "e2", "e3"] },
+      { id: "p1", situation: "직업 소개", instructionKo: "회사원이라고 말해 보세요.", targetAnswer: "会社員です。", targetReading: "かいしゃいんです。", hints: ["会社員です"], keyExpressionIds: ["e1"] },
+      { id: "p2", situation: "근무지 포함", instructionKo: "서울에서 일한다고 덧붙여 보세요.", targetAnswer: "会社員です。ソウルで働いています。", targetReading: "かいしゃいんです。ソウルではたらいています。", hints: ["ソウルで働いています"], keyExpressionIds: ["e1", "e2"] },
+      { id: "p3", situation: "정중하게 마무리", instructionKo: "짧은 자기소개를 정중하게 마무리해 보세요.", targetAnswer: "会社員です。ソウルで働いています。よろしくお願いします。", targetReading: "かいしゃいんです。ソウルではたらいています。よろしくおねがいします。", hints: ["よろしくお願いします"], keyExpressionIds: ["e1", "e2", "e3"] },
     ],
   },
   {
@@ -65,9 +65,9 @@ export const demoLessons: Lesson[] = [
       { speaker: "learner", japanese: "アイスコーヒーをお願いします。店内で。", reading: "アイスコーヒーをおねがいします。てんないで。", meaningKo: "아이스커피 주세요. 매장에서요." },
     ],
     prompts: [
-      { id: "p1", situation: "음료 주문", instructionKo: "아이스커피 한 잔을 주문해 보세요.", targetAnswer: "アイスコーヒーをお願いします。", hints: ["アイスコーヒー", "お願いします"], keyExpressionIds: ["e1"] },
-      { id: "p2", situation: "수량 말하기", instructionKo: "하나 달라고 말해 보세요.", targetAnswer: "アイスコーヒーをひとつください。", hints: ["ひとつください"], keyExpressionIds: ["e2"] },
-      { id: "p3", situation: "매장 이용", instructionKo: "매장에서 마신다고 덧붙여 보세요.", targetAnswer: "アイスコーヒーをお願いします。店内で。", hints: ["店内で"], keyExpressionIds: ["e1", "e3"] },
+      { id: "p1", situation: "음료 주문", instructionKo: "아이스커피 한 잔을 주문해 보세요.", targetAnswer: "アイスコーヒーをお願いします。", targetReading: "アイスコーヒーをおねがいします。", hints: ["アイスコーヒー", "お願いします"], keyExpressionIds: ["e1"] },
+      { id: "p2", situation: "수량 말하기", instructionKo: "하나 달라고 말해 보세요.", targetAnswer: "アイスコーヒーをひとつください。", targetReading: "アイスコーヒーをひとつください。", hints: ["ひとつください"], keyExpressionIds: ["e2"] },
+      { id: "p3", situation: "매장 이용", instructionKo: "매장에서 마신다고 덧붙여 보세요.", targetAnswer: "アイスコーヒーをお願いします。店内で。", targetReading: "アイスコーヒーをおねがいします。てんないで。", hints: ["店内で"], keyExpressionIds: ["e1", "e3"] },
     ],
   },
   {
@@ -88,9 +88,9 @@ export const demoLessons: Lesson[] = [
       { speaker: "learner", japanese: "氷は少なめでお願いします。", reading: "こおりはすくなめでおねがいします。", meaningKo: "얼음은 적게 부탁해요." },
     ],
     prompts: [
-      { id: "p1", situation: "얼음 적게 요청", instructionKo: "얼음을 적게 해 달라고 말해 보세요.", targetAnswer: "氷は少なめでお願いします。", hints: ["少なめ"], keyExpressionIds: ["e1"] },
-      { id: "p2", situation: "가능 여부 묻기", instructionKo: "얼음을 적게 할 수 있는지 물어보세요.", targetAnswer: "氷は少なめにできますか。", hints: ["できますか"], keyExpressionIds: ["e3"] },
-      { id: "p3", situation: "당도는 보통", instructionKo: "당도는 보통이라고 덧붙여 보세요.", targetAnswer: "甘さは普通で、氷は少なめでお願いします。", hints: ["甘さは普通で"], keyExpressionIds: ["e1", "e2"] },
+      { id: "p1", situation: "얼음 적게 요청", instructionKo: "얼음을 적게 해 달라고 말해 보세요.", targetAnswer: "氷は少なめでお願いします。", targetReading: "こおりはすくなめでおねがいします。", hints: ["少なめ"], keyExpressionIds: ["e1"] },
+      { id: "p2", situation: "가능 여부 묻기", instructionKo: "얼음을 적게 할 수 있는지 물어보세요.", targetAnswer: "氷は少なめにできますか。", targetReading: "こおりはすくなめにできますか。", hints: ["できますか"], keyExpressionIds: ["e3"] },
+      { id: "p3", situation: "당도는 보통", instructionKo: "당도는 보통이라고 덧붙여 보세요.", targetAnswer: "甘さは普通で、氷は少なめでお願いします。", targetReading: "あまさはふつうで、こおりはすくなめでおねがいします。", hints: ["甘さは普通で"], keyExpressionIds: ["e1", "e2"] },
     ],
   },
   {
@@ -111,9 +111,9 @@ export const demoLessons: Lesson[] = [
       { speaker: "learner", japanese: "袋は大丈夫です。カードで払います。", reading: "ふくろはだいじょうぶです。カードではらいます。", meaningKo: "봉투는 괜찮아요. 카드로 계산할게요." },
     ],
     prompts: [
-      { id: "p1", situation: "봉투 거절", instructionKo: "봉투는 괜찮다고 말해 보세요.", targetAnswer: "袋は大丈夫です。", hints: ["袋は大丈夫です"], keyExpressionIds: ["e1"] },
-      { id: "p2", situation: "카드 결제", instructionKo: "카드로 계산한다고 말해 보세요.", targetAnswer: "カードで払います。", hints: ["カードで"], keyExpressionIds: ["e2"] },
-      { id: "p3", situation: "도시락 데우기", instructionKo: "도시락을 데워 달라고 말해 보세요.", targetAnswer: "これを温めてください。", hints: ["温めてください"], keyExpressionIds: ["e3"] },
+      { id: "p1", situation: "봉투 거절", instructionKo: "봉투는 괜찮다고 말해 보세요.", targetAnswer: "袋は大丈夫です。", targetReading: "ふくろはだいじょうぶです。", hints: ["袋は大丈夫です"], keyExpressionIds: ["e1"] },
+      { id: "p2", situation: "카드 결제", instructionKo: "카드로 계산한다고 말해 보세요.", targetAnswer: "カードで払います。", targetReading: "カードではらいます。", hints: ["カードで"], keyExpressionIds: ["e2"] },
+      { id: "p3", situation: "도시락 데우기", instructionKo: "도시락을 데워 달라고 말해 보세요.", targetAnswer: "これを温めてください。", targetReading: "これをあたためてください。", hints: ["温めてください"], keyExpressionIds: ["e3"] },
     ],
   },
   {
@@ -134,9 +134,9 @@ export const demoLessons: Lesson[] = [
       { speaker: "staff", japanese: "あちらです。", reading: "あちらです。", meaningKo: "저쪽입니다." },
     ],
     prompts: [
-      { id: "p1", situation: "상품 위치 묻기", instructionKo: "삼각김밥이 어디 있는지 물어보세요.", targetAnswer: "おにぎりはどこですか。", hints: ["どこですか"], keyExpressionIds: ["e1"] },
-      { id: "p2", situation: "근처인지 확인", instructionKo: "이 근처에 있는지 물어보세요.", targetAnswer: "この近くにありますか。", hints: ["この近くにありますか"], keyExpressionIds: ["e2"] },
-      { id: "p3", situation: "감사 인사", instructionKo: "안내를 듣고 감사하다고 말해 보세요.", targetAnswer: "ありがとうございます。", hints: ["ありがとうございます"], keyExpressionIds: ["e3"] },
+      { id: "p1", situation: "상품 위치 묻기", instructionKo: "삼각김밥이 어디 있는지 물어보세요.", targetAnswer: "おにぎりはどこですか。", targetReading: "おにぎりはどこですか。", hints: ["どこですか"], keyExpressionIds: ["e1"] },
+      { id: "p2", situation: "근처인지 확인", instructionKo: "이 근처에 있는지 물어보세요.", targetAnswer: "この近くにありますか。", targetReading: "このちかくにありますか。", hints: ["この近くにありますか"], keyExpressionIds: ["e2"] },
+      { id: "p3", situation: "감사 인사", instructionKo: "안내를 듣고 감사하다고 말해 보세요.", targetAnswer: "ありがとうございます。", targetReading: "ありがとうございます。", hints: ["ありがとうございます"], keyExpressionIds: ["e3"] },
     ],
   },
   {
@@ -157,9 +157,9 @@ export const demoLessons: Lesson[] = [
       { speaker: "learner", japanese: "二人です。予約していません。", reading: "ふたりです。よやくしていません。", meaningKo: "두 명이에요. 예약하지 않았어요." },
     ],
     prompts: [
-      { id: "p1", situation: "인원 말하기", instructionKo: "두 명이라고 말해 보세요.", targetAnswer: "二人です。", hints: ["二人です"], keyExpressionIds: ["e1"] },
-      { id: "p2", situation: "예약 안 함", instructionKo: "예약하지 않았다고 말해 보세요.", targetAnswer: "予約していません。", hints: ["予約していません"], keyExpressionIds: ["e2"] },
-      { id: "p3", situation: "금연석 요청", instructionKo: "금연석을 부탁해 보세요.", targetAnswer: "禁煙席をお願いします。", hints: ["禁煙席"], keyExpressionIds: ["e3"] },
+      { id: "p1", situation: "인원 말하기", instructionKo: "두 명이라고 말해 보세요.", targetAnswer: "二人です。", targetReading: "ふたりです。", hints: ["二人です"], keyExpressionIds: ["e1"] },
+      { id: "p2", situation: "예약 안 함", instructionKo: "예약하지 않았다고 말해 보세요.", targetAnswer: "予約していません。", targetReading: "よやくしていません。", hints: ["予約していません"], keyExpressionIds: ["e2"] },
+      { id: "p3", situation: "금연석 요청", instructionKo: "금연석을 부탁해 보세요.", targetAnswer: "禁煙席をお願いします。", targetReading: "きんえんせきをおねがいします。", hints: ["禁煙席"], keyExpressionIds: ["e3"] },
     ],
   },
   {
@@ -180,9 +180,9 @@ export const demoLessons: Lesson[] = [
       { speaker: "staff", japanese: "かしこまりました。", reading: "かしこまりました。", meaningKo: "알겠습니다." },
     ],
     prompts: [
-      { id: "p1", situation: "세트 주문", instructionKo: "이 세트를 달라고 말해 보세요.", targetAnswer: "このセットをお願いします。", hints: ["このセット"], keyExpressionIds: ["e1"] },
-      { id: "p2", situation: "음료 선택", instructionKo: "음료는 차로 하겠다고 말해 보세요.", targetAnswer: "飲み物はお茶でお願いします。", hints: ["お茶で"], keyExpressionIds: ["e2"] },
-      { id: "p3", situation: "추천 묻기", instructionKo: "추천 메뉴를 물어보세요.", targetAnswer: "おすすめは何ですか。", hints: ["おすすめ"], keyExpressionIds: ["e3"] },
+      { id: "p1", situation: "세트 주문", instructionKo: "이 세트를 달라고 말해 보세요.", targetAnswer: "このセットをお願いします。", targetReading: "このセットをおねがいします。", hints: ["このセット"], keyExpressionIds: ["e1"] },
+      { id: "p2", situation: "음료 선택", instructionKo: "음료는 차로 하겠다고 말해 보세요.", targetAnswer: "飲み物はお茶でお願いします。", targetReading: "のみものはおちゃでおねがいします。", hints: ["お茶で"], keyExpressionIds: ["e2"] },
+      { id: "p3", situation: "추천 묻기", instructionKo: "추천 메뉴를 물어보세요.", targetAnswer: "おすすめは何ですか。", targetReading: "おすすめはなんですか。", hints: ["おすすめ"], keyExpressionIds: ["e3"] },
     ],
   },
   {
@@ -203,9 +203,9 @@ export const demoLessons: Lesson[] = [
       { speaker: "staff", japanese: "あちらへまっすぐです。", reading: "あちらへまっすぐです。", meaningKo: "저쪽으로 쭉 가세요." },
     ],
     prompts: [
-      { id: "p1", situation: "역 방향 묻기", instructionKo: "역이 어디인지 물어보세요.", targetAnswer: "すみません。駅はどちらですか。", hints: ["すみません", "どちらですか"], keyExpressionIds: ["e1"] },
-      { id: "p2", situation: "도보 시간", instructionKo: "걸어서 몇 분인지 물어보세요.", targetAnswer: "歩いて何分ですか。", hints: ["何分ですか"], keyExpressionIds: ["e2"] },
-      { id: "p3", situation: "길 확인", instructionKo: "쭉 가면 되는지 확인해 보세요.", targetAnswer: "まっすぐですか。", hints: ["まっすぐ"], keyExpressionIds: ["e3"] },
+      { id: "p1", situation: "역 방향 묻기", instructionKo: "역이 어디인지 물어보세요.", targetAnswer: "すみません。駅はどちらですか。", targetReading: "すみません。えきはどちらですか。", hints: ["すみません", "どちらですか"], keyExpressionIds: ["e1"] },
+      { id: "p2", situation: "도보 시간", instructionKo: "걸어서 몇 분인지 물어보세요.", targetAnswer: "歩いて何分ですか。", targetReading: "あるいてなんぷんですか。", hints: ["何分ですか"], keyExpressionIds: ["e2"] },
+      { id: "p3", situation: "길 확인", instructionKo: "쭉 가면 되는지 확인해 보세요.", targetAnswer: "まっすぐですか。", targetReading: "まっすぐですか。", hints: ["まっすぐ"], keyExpressionIds: ["e3"] },
     ],
   },
   {
@@ -226,9 +226,9 @@ export const demoLessons: Lesson[] = [
       { speaker: "staff", japanese: "二階にあります。", reading: "にかいにあります。", meaningKo: "2층에 있어요." },
     ],
     prompts: [
-      { id: "p1", situation: "화장실 위치 질문", instructionKo: "화장실이 어디 있는지 물어보세요.", targetAnswer: "トイレはどこですか。", hints: ["トイレ"], keyExpressionIds: ["e1"] },
-      { id: "p2", situation: "층 확인", instructionKo: "이 층에 있는지 물어보세요.", targetAnswer: "この階にありますか。", hints: ["この階"], keyExpressionIds: ["e2"] },
-      { id: "p3", situation: "안내 후 감사", instructionKo: "안내를 듣고 감사하다고 말해 보세요.", targetAnswer: "ありがとうございます。", hints: ["ありがとうございます"], keyExpressionIds: ["e3"] },
+      { id: "p1", situation: "화장실 위치 질문", instructionKo: "화장실이 어디 있는지 물어보세요.", targetAnswer: "トイレはどこですか。", targetReading: "トイレはどこですか。", hints: ["トイレ"], keyExpressionIds: ["e1"] },
+      { id: "p2", situation: "층 확인", instructionKo: "이 층에 있는지 물어보세요.", targetAnswer: "この階にありますか。", targetReading: "このかいにありますか。", hints: ["この階"], keyExpressionIds: ["e2"] },
+      { id: "p3", situation: "안내 후 감사", instructionKo: "안내를 듣고 감사하다고 말해 보세요.", targetAnswer: "ありがとうございます。", targetReading: "ありがとうございます。", hints: ["ありがとうございます"], keyExpressionIds: ["e3"] },
     ],
   },
   {
@@ -249,9 +249,9 @@ export const demoLessons: Lesson[] = [
       { speaker: "staff", japanese: "二百円です。", reading: "にひゃくえんです。", meaningKo: "200엔입니다." },
     ],
     prompts: [
-      { id: "p1", situation: "요금 질문", instructionKo: "시부야까지 얼마인지 물어보세요.", targetAnswer: "渋谷までいくらですか。", hints: ["までいくらですか"], keyExpressionIds: ["e1"] },
-      { id: "p2", situation: "표 구매", instructionKo: "표 한 장 달라고 말해 보세요.", targetAnswer: "切符を一枚ください。", hints: ["一枚ください"], keyExpressionIds: ["e2"] },
-      { id: "p3", situation: "전철 확인", instructionKo: "이 전철이 맞는지 확인해 보세요.", targetAnswer: "この電車で大丈夫ですか。", hints: ["大丈夫ですか"], keyExpressionIds: ["e3"] },
+      { id: "p1", situation: "요금 질문", instructionKo: "시부야까지 얼마인지 물어보세요.", targetAnswer: "渋谷までいくらですか。", targetReading: "しぶやまでいくらですか。", hints: ["までいくらですか"], keyExpressionIds: ["e1"] },
+      { id: "p2", situation: "표 구매", instructionKo: "표 한 장 달라고 말해 보세요.", targetAnswer: "切符を一枚ください。", targetReading: "きっぷをいちまいください。", hints: ["一枚ください"], keyExpressionIds: ["e2"] },
+      { id: "p3", situation: "전철 확인", instructionKo: "이 전철이 맞는지 확인해 보세요.", targetAnswer: "この電車で大丈夫ですか。", targetReading: "このでんしゃでだいじょうぶですか。", hints: ["大丈夫ですか"], keyExpressionIds: ["e3"] },
     ],
   },
   {
@@ -272,9 +272,9 @@ export const demoLessons: Lesson[] = [
       { speaker: "staff", japanese: "一回必要です。", reading: "いっかいひつようです。", meaningKo: "한 번 필요해요." },
     ],
     prompts: [
-      { id: "p1", situation: "환승 질문", instructionKo: "환승이 필요한지 물어보세요.", targetAnswer: "乗り換えは必要ですか。", hints: ["乗り換え"], keyExpressionIds: ["e1"] },
-      { id: "p2", situation: "승강장 질문", instructionKo: "몇 번 승강장인지 물어보세요.", targetAnswer: "何番線ですか。", hints: ["何番線"], keyExpressionIds: ["e2"] },
-      { id: "p3", situation: "급행 정차 여부", instructionKo: "급행이 서는지 물어보세요.", targetAnswer: "急行は止まりますか。", hints: ["急行"], keyExpressionIds: ["e3"] },
+      { id: "p1", situation: "환승 질문", instructionKo: "환승이 필요한지 물어보세요.", targetAnswer: "乗り換えは必要ですか。", targetReading: "のりかえはひつようですか。", hints: ["乗り換え"], keyExpressionIds: ["e1"] },
+      { id: "p2", situation: "승강장 질문", instructionKo: "몇 번 승강장인지 물어보세요.", targetAnswer: "何番線ですか。", targetReading: "なんばんせんですか。", hints: ["何番線"], keyExpressionIds: ["e2"] },
+      { id: "p3", situation: "급행 정차 여부", instructionKo: "급행이 서는지 물어보세요.", targetAnswer: "急行は止まりますか。", targetReading: "きゅうこうはとまりますか。", hints: ["急行"], keyExpressionIds: ["e3"] },
     ],
   },
   {
@@ -295,9 +295,9 @@ export const demoLessons: Lesson[] = [
       { speaker: "staff", japanese: "はい、あります。", reading: "はい、あります。", meaningKo: "네, 있어요." },
     ],
     prompts: [
-      { id: "p1", situation: "사이즈 묻기", instructionKo: "M사이즈가 있는지 물어보세요.", targetAnswer: "Mサイズはありますか。", hints: ["ありますか"], keyExpressionIds: ["e1"] },
-      { id: "p2", situation: "시착 요청", instructionKo: "입어봐도 되는지 물어보세요.", targetAnswer: "試着してもいいですか。", hints: ["試着"], keyExpressionIds: ["e2"] },
-      { id: "p3", situation: "더 큰 사이즈 요청", instructionKo: "조금 더 큰 사이즈가 있는지 물어보세요.", targetAnswer: "もう少し大きいサイズはありますか。", hints: ["もう少し大きい"], keyExpressionIds: ["e3"] },
+      { id: "p1", situation: "사이즈 묻기", instructionKo: "M사이즈가 있는지 물어보세요.", targetAnswer: "Mサイズはありますか。", targetReading: "えむさいずはありますか。", hints: ["ありますか"], keyExpressionIds: ["e1"] },
+      { id: "p2", situation: "시착 요청", instructionKo: "입어봐도 되는지 물어보세요.", targetAnswer: "試着してもいいですか。", targetReading: "しちゃくしてもいいですか。", hints: ["試着"], keyExpressionIds: ["e2"] },
+      { id: "p3", situation: "더 큰 사이즈 요청", instructionKo: "조금 더 큰 사이즈가 있는지 물어보세요.", targetAnswer: "もう少し大きいサイズはありますか。", targetReading: "もうすこしおおきいサイズはありますか。", hints: ["もう少し大きい"], keyExpressionIds: ["e3"] },
     ],
   },
   {
@@ -318,9 +318,9 @@ export const demoLessons: Lesson[] = [
       { speaker: "staff", japanese: "パスポートをお願いします。", reading: "パスポートをおねがいします。", meaningKo: "여권 부탁드립니다." },
     ],
     prompts: [
-      { id: "p1", situation: "구매 확정", instructionKo: "이걸로 하겠다고 말해 보세요.", targetAnswer: "これをお願いします。", hints: ["これをお願いします"], keyExpressionIds: ["e1"] },
-      { id: "p2", situation: "면세 질문", instructionKo: "면세 가능한지 물어보세요.", targetAnswer: "免税できますか。", hints: ["免税"], keyExpressionIds: ["e2"] },
-      { id: "p3", situation: "영수증 요청", instructionKo: "영수증을 달라고 말해 보세요.", targetAnswer: "レシートをください。", hints: ["レシート"], keyExpressionIds: ["e3"] },
+      { id: "p1", situation: "구매 확정", instructionKo: "이걸로 하겠다고 말해 보세요.", targetAnswer: "これをお願いします。", targetReading: "これをおねがいします。", hints: ["これをお願いします"], keyExpressionIds: ["e1"] },
+      { id: "p2", situation: "면세 질문", instructionKo: "면세 가능한지 물어보세요.", targetAnswer: "免税できますか。", targetReading: "めんぜいできますか。", hints: ["免税"], keyExpressionIds: ["e2"] },
+      { id: "p3", situation: "영수증 요청", instructionKo: "영수증을 달라고 말해 보세요.", targetAnswer: "レシートをください。", targetReading: "レシートをください。", hints: ["レシート"], keyExpressionIds: ["e3"] },
     ],
   },
   {
@@ -341,9 +341,9 @@ export const demoLessons: Lesson[] = [
       { speaker: "staff", japanese: "確認いたします。", reading: "かくにんいたします。", meaningKo: "확인하겠습니다." },
     ],
     prompts: [
-      { id: "p1", situation: "예약 있다고 말하기", instructionKo: "예약했다고 말해 보세요.", targetAnswer: "予約しています。", hints: ["予約しています"], keyExpressionIds: ["e1"] },
-      { id: "p2", situation: "이름 말하기", instructionKo: "박이라고 이름을 말해 보세요.", targetAnswer: "パクです。", hints: ["です"], keyExpressionIds: ["e2"] },
-      { id: "p3", situation: "조식 시간 질문", instructionKo: "조식이 몇 시부터인지 물어보세요.", targetAnswer: "朝食は何時からですか。", hints: ["何時からですか"], keyExpressionIds: ["e3"] },
+      { id: "p1", situation: "예약 있다고 말하기", instructionKo: "예약했다고 말해 보세요.", targetAnswer: "予約しています。", targetReading: "よやくしています。", hints: ["予約しています"], keyExpressionIds: ["e1"] },
+      { id: "p2", situation: "이름 말하기", instructionKo: "박이라고 이름을 말해 보세요.", targetAnswer: "パクです。", targetReading: "ぱくです。", hints: ["です"], keyExpressionIds: ["e2"] },
+      { id: "p3", situation: "조식 시간 질문", instructionKo: "조식이 몇 시부터인지 물어보세요.", targetAnswer: "朝食は何時からですか。", targetReading: "ちょうしょくはなんじからですか。", hints: ["何時からですか"], keyExpressionIds: ["e3"] },
     ],
   },
   {
@@ -364,9 +364,9 @@ export const demoLessons: Lesson[] = [
       { speaker: "staff", japanese: "はい、承知しました。", reading: "はい、しょうちしました。", meaningKo: "네, 알겠습니다." },
     ],
     prompts: [
-      { id: "p1", situation: "수건 추가 요청", instructionKo: "수건 한 장 더 요청해 보세요.", targetAnswer: "タオルをもう一枚いただけますか。", hints: ["もう一枚"], keyExpressionIds: ["e1"] },
-      { id: "p2", situation: "체크아웃 연장", instructionKo: "체크아웃을 조금 늦출 수 있는지 물어보세요.", targetAnswer: "チェックアウトを少し延ばせますか。", hints: ["少し延ばせますか"], keyExpressionIds: ["e2"] },
-      { id: "p3", situation: "방으로 가져오기", instructionKo: "방으로 가져다 달라고 덧붙여 보세요.", targetAnswer: "部屋に持ってきてください。", hints: ["部屋に"], keyExpressionIds: ["e3"] },
+      { id: "p1", situation: "수건 추가 요청", instructionKo: "수건 한 장 더 요청해 보세요.", targetAnswer: "タオルをもう一枚いただけますか。", targetReading: "タオルをもういちまいいただけますか。", hints: ["もう一枚"], keyExpressionIds: ["e1"] },
+      { id: "p2", situation: "체크아웃 연장", instructionKo: "체크아웃을 조금 늦출 수 있는지 물어보세요.", targetAnswer: "チェックアウトを少し延ばせますか。", targetReading: "チェックアウトをすこしのばせますか。", hints: ["少し延ばせますか"], keyExpressionIds: ["e2"] },
+      { id: "p3", situation: "방으로 가져오기", instructionKo: "방으로 가져다 달라고 덧붙여 보세요.", targetAnswer: "部屋に持ってきてください。", targetReading: "へやにもってきてください。", hints: ["部屋に"], keyExpressionIds: ["e3"] },
     ],
   },
   {
@@ -387,9 +387,9 @@ export const demoLessons: Lesson[] = [
       { speaker: "staff", japanese: "おはようございます。", reading: "おはようございます。", meaningKo: "좋은 아침입니다." },
     ],
     prompts: [
-      { id: "p1", situation: "아침 인사", instructionKo: "출근해서 아침 인사를 해 보세요.", targetAnswer: "おはようございます。", hints: ["おはようございます"], keyExpressionIds: ["e1"] },
-      { id: "p2", situation: "부탁 인사", instructionKo: "오늘도 잘 부탁드린다고 말해 보세요.", targetAnswer: "今日もよろしくお願いします。", hints: ["よろしくお願いします"], keyExpressionIds: ["e2"] },
-      { id: "p3", situation: "업무 중 인사", instructionKo: "수고하신다고 인사해 보세요.", targetAnswer: "お疲れさまです。", hints: ["お疲れさまです"], keyExpressionIds: ["e3"] },
+      { id: "p1", situation: "아침 인사", instructionKo: "출근해서 아침 인사를 해 보세요.", targetAnswer: "おはようございます。", targetReading: "おはようございます。", hints: ["おはようございます"], keyExpressionIds: ["e1"] },
+      { id: "p2", situation: "부탁 인사", instructionKo: "오늘도 잘 부탁드린다고 말해 보세요.", targetAnswer: "今日もよろしくお願いします。", targetReading: "きょうもよろしくおねがいします。", hints: ["よろしくお願いします"], keyExpressionIds: ["e2"] },
+      { id: "p3", situation: "업무 중 인사", instructionKo: "수고하신다고 인사해 보세요.", targetAnswer: "お疲れさまです。", targetReading: "おつかれさまです。", hints: ["お疲れさまです"], keyExpressionIds: ["e3"] },
     ],
   },
   {
@@ -410,9 +410,9 @@ export const demoLessons: Lesson[] = [
       { speaker: "learner", japanese: "わかりました。締め切りはいつですか。", reading: "わかりました。しめきりはいつですか。", meaningKo: "알겠습니다. 마감은 언제인가요?" },
     ],
     prompts: [
-      { id: "p1", situation: "이해했다 말하기", instructionKo: "알겠다고 답해 보세요.", targetAnswer: "わかりました。", hints: ["わかりました"], keyExpressionIds: ["e1"] },
-      { id: "p2", situation: "한 번 더 요청", instructionKo: "한 번 더 말해 달라고 해 보세요.", targetAnswer: "もう一度お願いします。", hints: ["もう一度"], keyExpressionIds: ["e2"] },
-      { id: "p3", situation: "마감 질문", instructionKo: "마감이 언제인지 물어보세요.", targetAnswer: "締め切りはいつですか。", hints: ["締め切り"], keyExpressionIds: ["e3"] },
+      { id: "p1", situation: "이해했다 말하기", instructionKo: "알겠다고 답해 보세요.", targetAnswer: "わかりました。", targetReading: "わかりました。", hints: ["わかりました"], keyExpressionIds: ["e1"] },
+      { id: "p2", situation: "한 번 더 요청", instructionKo: "한 번 더 말해 달라고 해 보세요.", targetAnswer: "もう一度お願いします。", targetReading: "もういちどおねがいします。", hints: ["もう一度"], keyExpressionIds: ["e2"] },
+      { id: "p3", situation: "마감 질문", instructionKo: "마감이 언제인지 물어보세요.", targetAnswer: "締め切りはいつですか。", targetReading: "しめきりはいつですか。", hints: ["締め切り"], keyExpressionIds: ["e3"] },
     ],
   },
   {
@@ -433,9 +433,9 @@ export const demoLessons: Lesson[] = [
       { speaker: "staff", japanese: "そうですね。", reading: "そうですね。", meaningKo: "그러네요." },
     ],
     prompts: [
-      { id: "p1", situation: "추운 날씨 말하기", instructionKo: "오늘 춥다고 말해 보세요.", targetAnswer: "今日は寒いですね。", hints: ["寒いですね"], keyExpressionIds: ["e1"] },
-      { id: "p2", situation: "비 올 것 같음", instructionKo: "비가 올 것 같다고 말해 보세요.", targetAnswer: "雨が降りそうです。", hints: ["降りそうです"], keyExpressionIds: ["e2"] },
-      { id: "p3", situation: "우산 물어보기", instructionKo: "우산이 있는지 물어보세요.", targetAnswer: "傘を持っていますか。", hints: ["傘"], keyExpressionIds: ["e3"] },
+      { id: "p1", situation: "추운 날씨 말하기", instructionKo: "오늘 춥다고 말해 보세요.", targetAnswer: "今日は寒いですね。", targetReading: "きょうはさむいですね。", hints: ["寒いですね"], keyExpressionIds: ["e1"] },
+      { id: "p2", situation: "비 올 것 같음", instructionKo: "비가 올 것 같다고 말해 보세요.", targetAnswer: "雨が降りそうです。", targetReading: "あめがふりそうです。", hints: ["降りそうです"], keyExpressionIds: ["e2"] },
+      { id: "p3", situation: "우산 물어보기", instructionKo: "우산이 있는지 물어보세요.", targetAnswer: "傘を持っていますか。", targetReading: "かさをもっていますか。", hints: ["傘"], keyExpressionIds: ["e3"] },
     ],
   },
   {
@@ -456,9 +456,9 @@ export const demoLessons: Lesson[] = [
       { speaker: "staff", japanese: "家でゆっくりします。", reading: "いえでゆっくりします。", meaningKo: "집에서 쉴 거예요." },
     ],
     prompts: [
-      { id: "p1", situation: "주말 계획 말하기", instructionKo: "주말에 친구를 만난다고 말해 보세요.", targetAnswer: "週末は友だちに会います。", hints: ["友だちに会います"], keyExpressionIds: ["e1"] },
-      { id: "p2", situation: "집에서 쉬기", instructionKo: "집에서 푹 쉰다고 말해 보세요.", targetAnswer: "家でゆっくりします。", hints: ["ゆっくりします"], keyExpressionIds: ["e2"] },
-      { id: "p3", situation: "상대에게 되묻기", instructionKo: "상대는 어떤지 되물어 보세요.", targetAnswer: "あなたはどうですか。", hints: ["どうですか"], keyExpressionIds: ["e3"] },
+      { id: "p1", situation: "주말 계획 말하기", instructionKo: "주말에 친구를 만난다고 말해 보세요.", targetAnswer: "週末は友だちに会います。", targetReading: "しゅうまつはともだちにあいます。", hints: ["友だちに会います"], keyExpressionIds: ["e1"] },
+      { id: "p2", situation: "집에서 쉬기", instructionKo: "집에서 푹 쉰다고 말해 보세요.", targetAnswer: "家でゆっくりします。", targetReading: "いえでゆっくりします。", hints: ["ゆっくりします"], keyExpressionIds: ["e2"] },
+      { id: "p3", situation: "상대에게 되묻기", instructionKo: "상대는 어떤지 되물어 보세요.", targetAnswer: "あなたはどうですか。", targetReading: "あなたはどうですか。", hints: ["どうですか"], keyExpressionIds: ["e3"] },
     ],
   },
   {
@@ -479,9 +479,9 @@ export const demoLessons: Lesson[] = [
       { speaker: "staff", japanese: "そうですね。", reading: "そうですね。", meaningKo: "그러네요." },
     ],
     prompts: [
-      { id: "p1", situation: "기본 인사", instructionKo: "이웃에게 안녕하세요라고 말해 보세요.", targetAnswer: "こんにちは。", hints: ["こんにちは"], keyExpressionIds: ["e1"] },
-      { id: "p2", situation: "감사 인사", instructionKo: "항상 감사하다고 말해 보세요.", targetAnswer: "いつもありがとうございます。", hints: ["ありがとうございます"], keyExpressionIds: ["e2"] },
-      { id: "p3", situation: "날씨 이야기", instructionKo: "오늘 날씨가 좋다고 말해 보세요.", targetAnswer: "今日はいい天気ですね。", hints: ["いい天気ですね"], keyExpressionIds: ["e3"] },
+      { id: "p1", situation: "기본 인사", instructionKo: "이웃에게 안녕하세요라고 말해 보세요.", targetAnswer: "こんにちは。", targetReading: "こんにちは。", hints: ["こんにちは"], keyExpressionIds: ["e1"] },
+      { id: "p2", situation: "감사 인사", instructionKo: "항상 감사하다고 말해 보세요.", targetAnswer: "いつもありがとうございます。", targetReading: "いつもありがとうございます。", hints: ["ありがとうございます"], keyExpressionIds: ["e2"] },
+      { id: "p3", situation: "날씨 이야기", instructionKo: "오늘 날씨가 좋다고 말해 보세요.", targetAnswer: "今日はいい天気ですね。", targetReading: "きょうはいいてんきですね。", hints: ["いい天気ですね"], keyExpressionIds: ["e3"] },
     ],
   },
   {
@@ -502,9 +502,9 @@ export const demoLessons: Lesson[] = [
       { speaker: "staff", japanese: "三時です。", reading: "さんじです。", meaningKo: "3시입니다." },
     ],
     prompts: [
-      { id: "p1", situation: "짐 부치기", instructionKo: "짐을 부치고 싶다고 말해 보세요.", targetAnswer: "荷物を預けたいです。", hints: ["預けたいです"], keyExpressionIds: ["e1"] },
-      { id: "p2", situation: "탑승 시간", instructionKo: "탑승 시간이 몇 시인지 물어보세요.", targetAnswer: "搭乗は何時ですか。", hints: ["搭乗"], keyExpressionIds: ["e2"] },
-      { id: "p3", situation: "게이트 위치", instructionKo: "게이트가 어디인지 물어보세요.", targetAnswer: "ゲートはどこですか。", hints: ["ゲート"], keyExpressionIds: ["e3"] },
+      { id: "p1", situation: "짐 부치기", instructionKo: "짐을 부치고 싶다고 말해 보세요.", targetAnswer: "荷物を預けたいです。", targetReading: "にもつをあずけたいです。", hints: ["預けたいです"], keyExpressionIds: ["e1"] },
+      { id: "p2", situation: "탑승 시간", instructionKo: "탑승 시간이 몇 시인지 물어보세요.", targetAnswer: "搭乗は何時ですか。", targetReading: "とうじょうはなんじですか。", hints: ["搭乗"], keyExpressionIds: ["e2"] },
+      { id: "p3", situation: "게이트 위치", instructionKo: "게이트가 어디인지 물어보세요.", targetAnswer: "ゲートはどこですか。", targetReading: "ゲートはどこですか。", hints: ["ゲート"], keyExpressionIds: ["e3"] },
     ],
   },
   {
@@ -525,9 +525,9 @@ export const demoLessons: Lesson[] = [
       { speaker: "learner", japanese: "旅行で使いたいからです。", reading: "りょこうでつかいたいからです。", meaningKo: "여행에서 쓰고 싶어서예요." },
     ],
     prompts: [
-      { id: "p1", situation: "일본어를 좋아함", instructionKo: "일본어를 좋아한다고 말해 보세요.", targetAnswer: "日本語が好きです。", hints: ["好きです"], keyExpressionIds: ["e1"] },
-      { id: "p2", situation: "이유 말하기", instructionKo: "여행에서 쓰고 싶어서라고 말해 보세요.", targetAnswer: "旅行で使いたいからです。", hints: ["からです"], keyExpressionIds: ["e2"] },
-      { id: "p3", situation: "매일 연습함", instructionKo: "매일 연습한다고 말해 보세요.", targetAnswer: "毎日練習しています。", hints: ["毎日"], keyExpressionIds: ["e3"] },
+      { id: "p1", situation: "일본어를 좋아함", instructionKo: "일본어를 좋아한다고 말해 보세요.", targetAnswer: "日本語が好きです。", targetReading: "にほんごがすきです。", hints: ["好きです"], keyExpressionIds: ["e1"] },
+      { id: "p2", situation: "이유 말하기", instructionKo: "여행에서 쓰고 싶어서라고 말해 보세요.", targetAnswer: "旅行で使いたいからです。", targetReading: "りょこうでつかいたいからです。", hints: ["からです"], keyExpressionIds: ["e2"] },
+      { id: "p3", situation: "매일 연습함", instructionKo: "매일 연습한다고 말해 보세요.", targetAnswer: "毎日練習しています。", targetReading: "まいにちれんしゅうしています。", hints: ["毎日"], keyExpressionIds: ["e3"] },
     ],
   },
 ];
