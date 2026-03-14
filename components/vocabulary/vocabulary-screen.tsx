@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useApp } from "@/components/auth/app-provider";
 import { getDifficultyLabel } from "@/lib/utils/labels";
+import { toHiraganaReading } from "@/lib/utils/japanese";
 import type { Difficulty, StudySentence, VocabularyWord } from "@/lib/types";
 
 const tabs = [
@@ -281,7 +282,7 @@ function WordCard({
       <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className="text-2xl font-semibold text-white">{item.japanese}</h2>
-          <p className="mt-1 text-sm text-stone-400">{item.reading}</p>
+          <p className="mt-1 text-sm text-stone-400">{toHiraganaReading(item.reading)}</p>
         </div>
         <span className="rounded-full bg-orange-400/15 px-3 py-1 text-xs font-medium text-orange-200">
           {getDifficultyLabel(item.difficulty)}
@@ -330,7 +331,7 @@ function SentenceListCard({
       <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className="text-2xl font-semibold text-white">{item.japanese}</h2>
-          {showFurigana && <p className="mt-1 text-sm text-orange-100/80">{item.reading}</p>}
+          {showFurigana && <p className="mt-1 text-sm text-orange-100/80">{toHiraganaReading(item.reading)}</p>}
         </div>
         <span className="rounded-full bg-orange-400/15 px-3 py-1 text-xs font-medium text-orange-200">
           {getDifficultyLabel(item.difficulty)}

@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useApp } from "@/components/auth/app-provider";
 import { useVoiceInput } from "@/hooks/use-voice-input";
 import { getCategoryLabel, getLessonTitleLabel } from "@/lib/utils/labels";
+import { toHiraganaReading } from "@/lib/utils/japanese";
 
 export function LessonPracticeScreen({
   lessonId,
@@ -122,7 +123,7 @@ export function LessonPracticeScreen({
         <div className="mt-4 rounded-[24px] border border-orange-300/20 bg-orange-400/10 p-4">
           <p className="text-xs uppercase tracking-[0.18em] text-orange-200">따라 말할 문장</p>
           <p className="mt-2 text-lg font-semibold leading-8 text-white">{prompt.targetAnswer}</p>
-          <p className="mt-2 text-sm leading-7 text-orange-100/85">{prompt.targetReading}</p>
+          <p className="mt-2 text-sm leading-7 text-orange-100/85">{toHiraganaReading(prompt.targetReading)}</p>
           {keyExpressions.length > 0 && (
             <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-4">
               <p className="text-xs uppercase tracking-[0.18em] text-stone-400">한국어 뜻</p>
